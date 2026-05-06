@@ -210,6 +210,8 @@ function decodeJwtPayload(token: string): GoogleJwtPayload {
 
   const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
   const decoded = window.atob(normalized);
+  const bytes = Uint8Array.from(decoded, (char) => char.charCodeAt(0));
+  const json = new TextDecoder().decode(bytes);
 
-  return JSON.parse(decoded) as GoogleJwtPayload;
+  return JSON.parse(json) as GoogleJwtPayload;
 }

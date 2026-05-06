@@ -1,0 +1,8 @@
+{
+  "name": "tien-dat-wedding-api",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@azure/data-tables": "13.3.1"
+  }
+}

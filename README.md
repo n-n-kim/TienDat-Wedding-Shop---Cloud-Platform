@@ -1,11 +1,61 @@
+# Tien Dat Wedding Platform
 
-  # Modern Minimalist Landing Page
+Frontend wedding platform built with React, TypeScript, and Vite. The project is deployed on Azure Static Web Apps, supports Google Sign-In, and now includes a cloud-ready wedding card save/load flow backed by Azure Functions and Azure Table Storage.
 
-  This is a code bundle for Modern Minimalist Landing Page. The original project is available at https://www.figma.com/design/jOjWLd5CN4KDoXouyjTFDW/Modern-Minimalist-Landing-Page.
+## Tech Stack
 
-  ## Running the code
+- Frontend: React, TypeScript, Vite, Tailwind CSS
+- Authentication: Google Identity Services
+- CI/CD: GitHub Actions
+- Hosting: Azure Static Web Apps
+- API: Azure Functions
+- Cloud data store: Azure Table Storage
 
-  Run `npm i` to install the dependencies.
+## Run Frontend Locally
 
-  Run `npm run dev` to start the development server.
-  
+1. Install dependencies:
+   `npm install`
+2. Create `.env` from `.env.example` and set `VITE_GOOGLE_CLIENT_ID`.
+3. Start the app:
+   `npm run dev`
+
+## Cloud Save Architecture
+
+- The frontend designer keeps a local draft in `localStorage`.
+- Signed-in users can save designs to `/api/cards`.
+- Azure Functions persist design JSON into Azure Table Storage.
+- Each user design uses:
+  - `PartitionKey = userId`
+  - `RowKey = designId`
+
+## API Contract
+
+- `GET /api/cards?userId=<google-user-id>`
+- `POST /api/cards`
+- `GET /api/cards/{id}?userId=<google-user-id>`
+- `PUT /api/cards/{id}`
+- `DELETE /api/cards/{id}?userId=<google-user-id>`
+
+## Manual Azure Setup
+
+1. In Azure, create a `Storage Account`.
+2. Inside that storage account, create a table named `WeddingCardDesigns` or another table name of your choice.
+3. Copy the storage account connection string.
+4. In Azure Static Web Apps, open `Environment variables` and add:
+   - `VITE_GOOGLE_CLIENT_ID`
+   - `AZURE_STORAGE_CONNECTION_STRING`
+   - `AZURE_TABLE_NAME`
+5. Save the variables and redeploy the app.
+
+## Local Function Settings
+
+If you want to run Functions locally later, copy:
+
+- `api/local.settings.sample.json` -> `api/local.settings.json`
+
+Then replace the placeholder storage values with your real connection string.
+
+## Notes
+
+- The current API trusts the signed-in user data sent by the frontend.
+- For a production-grade version, the backend should verify the Google ID token before reading or writing user-specific designs.

@@ -1,22 +1,17 @@
-import { ArrowLeft, Sparkles } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ArrowLeft, LoaderCircle, Save, Sparkles, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  createWeddingCardDesign,
+  deleteWeddingCardDesign,
+  listWeddingCardDesigns,
+  updateWeddingCardDesign,
+} from '../services/cardsApi';
+import type { CardData, WeddingCardDesign } from '../types/weddingCard';
 
 interface WeddingCardDesignerProps {
   onBack: () => void;
-}
-
-interface CardData {
-  brideName: string;
-  groomName: string;
-  brideParents: string;
-  groomParents: string;
-  venue: string;
-  date: string;
-  time: string;
-  colorScheme: string;
-  background: string;
 }
 
 const colorSchemes = [
@@ -33,21 +28,30 @@ const backgrounds = [
   { id: 'luxury', name: 'Hoa van sang trong', nameEn: 'Luxury Pattern', pattern: 'luxury' },
 ];
 
+const initialCardData: CardData = {
+  brideName: '',
+  groomName: '',
+  brideParents: '',
+  groomParents: '',
+  venue: '',
+  date: '',
+  time: '',
+  colorScheme: 'red-gold',
+  background: 'floral',
+};
+
 export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
   const { language } = useLanguage();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
-  const [cardData, setCardData] = useState<CardData>({
-    brideName: '',
-    groomName: '',
-    brideParents: '',
-    groomParents: '',
-    venue: '',
-    date: '',
-    time: '',
-    colorScheme: 'red-gold',
-    background: 'floral',
-  });
+  const [cardData, setCardData] = useState<CardData>(initialCardData);
+  const [savedDesigns, setSavedDesigns] = useState<WeddingCardDesign[]>([]);
+  const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null);
+  const [cloudMessage, setCloudMessage] = useState<string | null>(null);
+  const [cloudError, setCloudError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingDesigns, setIsLoadingDesigns] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     const savedDraft = localStorage.getItem('wedding_card_draft');
@@ -63,6 +67,16 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
     return () => clearTimeout(timer);
   }, [cardData]);
 
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      setSavedDesigns([]);
+      setSelectedDesignId(null);
+      return;
+    }
+
+    void loadSavedDesigns(user.id);
+  }, [isAuthenticated, user]);
+
   const handleChange = (field: keyof CardData, value: string) => {
     setCardData((prev) => ({ ...prev, [field]: value }));
   };
@@ -73,6 +87,126 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
         ? 'Thiet ke cua ban da duoc luu! Chung toi se lien he tu van som.'
         : 'Your design has been saved! We will contact you soon.',
     );
+  };
+
+  const handleSaveDesign = async () => {
+    if (!user) {
+      setCloudError(
+        language === 'vi'
+          ? 'Vui long dang nhap de luu thiet ke len cloud.'
+          : 'Please sign in to save designs to the cloud.',
+      );
+      return;
+    }
+
+    setIsSaving(true);
+    setCloudError(null);
+    setCloudMessage(null);
+
+    const title = buildDesignTitle(cardData, savedDesigns.length + 1, language);
+
+    try {
+      const design = selectedDesignId
+        ? await updateWeddingCardDesign(selectedDesignId, {
+            userId: user.id,
+            title,
+            status: 'draft',
+            cardData,
+          })
+        : await createWeddingCardDesign({
+            userId: user.id,
+            userEmail: user.email,
+            userName: user.name,
+            title,
+            status: 'draft',
+            cardData,
+          });
+
+      setSelectedDesignId(design.id);
+      setCloudMessage(
+        language === 'vi'
+          ? 'Da luu thiet ke len cloud thanh cong.'
+          : 'Design saved to the cloud successfully.',
+      );
+      await loadSavedDesigns(user.id);
+    } catch (error) {
+      setCloudError(
+        language === 'vi'
+          ? 'Khong the luu thiet ke. Hay kiem tra API cloud.'
+          : 'Could not save design. Check the cloud API configuration.',
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleLoadDesign = (design: WeddingCardDesign) => {
+    setCardData(design.cardData);
+    setSelectedDesignId(design.id);
+    setCloudMessage(
+      language === 'vi'
+        ? 'Da nap thiet ke da luu.'
+        : 'Saved design loaded.',
+    );
+    setCloudError(null);
+  };
+
+  const handleDeleteDesign = async (design: WeddingCardDesign) => {
+    if (!user) {
+      return;
+    }
+
+    setIsDeletingId(design.id);
+    setCloudError(null);
+    setCloudMessage(null);
+
+    try {
+      await deleteWeddingCardDesign(design.id, user.id);
+      setSavedDesigns((prev) => prev.filter((item) => item.id !== design.id));
+
+      if (selectedDesignId === design.id) {
+        setSelectedDesignId(null);
+      }
+
+      setCloudMessage(
+        language === 'vi'
+          ? 'Da xoa thiet ke khoi cloud.'
+          : 'Design deleted from the cloud.',
+      );
+    } catch {
+      setCloudError(
+        language === 'vi'
+          ? 'Khong the xoa thiet ke.'
+          : 'Could not delete the design.',
+      );
+    } finally {
+      setIsDeletingId(null);
+    }
+  };
+
+  const handleStartNew = () => {
+    setCardData(initialCardData);
+    setSelectedDesignId(null);
+    setCloudMessage(null);
+    setCloudError(null);
+  };
+
+  const loadSavedDesigns = async (userId: string) => {
+    setIsLoadingDesigns(true);
+    setCloudError(null);
+
+    try {
+      const designs = await listWeddingCardDesigns(userId);
+      setSavedDesigns(designs);
+    } catch {
+      setCloudError(
+        language === 'vi'
+          ? 'Khong the tai danh sach thiet ke da luu.'
+          : 'Could not load saved designs.',
+      );
+    } finally {
+      setIsLoadingDesigns(false);
+    }
   };
 
   const selectedColor = colorSchemes.find((c) => c.id === cardData.colorScheme);
@@ -121,27 +255,92 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
                 <h1 className="text-xl font-semibold text-gray-900">
                   {language === 'vi' ? 'Thiet ke thiep cuoi' : 'Design Wedding Card'}
                 </h1>
-                {isAuthenticated && (
+                {isAuthenticated ? (
                   <p className="text-xs text-green-700">
-                    {language === 'vi' ? 'Ban nhap dang duoc tu dong luu' : 'Draft is being auto-saved'}
+                    {language === 'vi'
+                      ? 'Ban nhap dang duoc luu local va co the dong bo len cloud'
+                      : 'Your draft is auto-saved locally and can be synced to the cloud'}
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-700">
+                    {language === 'vi'
+                      ? 'Dang nhap de luu thiet ke len cloud'
+                      : 'Sign in to save your design to the cloud'}
                   </p>
                 )}
               </div>
             </div>
           </div>
 
-          <button
-            onClick={handleConsult}
-            className="rounded-lg px-4 py-2 text-sm text-white transition-all hover:shadow-lg"
-            style={{ backgroundColor: '#8B0000' }}
-          >
-            {language === 'vi' ? 'Tu van dat ngay' : 'Consult & Order'}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleStartNew}
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              {language === 'vi' ? 'Mau moi' : 'New Draft'}
+            </button>
+            <button
+              onClick={handleConsult}
+              className="rounded-lg px-4 py-2 text-sm text-white transition-all hover:shadow-lg"
+              style={{ backgroundColor: '#8B0000' }}
+            >
+              {language === 'vi' ? 'Tu van dat ngay' : 'Consult & Order'}
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="mb-8 grid gap-4 rounded-2xl border border-amber-100 bg-white p-5 shadow-sm lg:grid-cols-[1.2fr_1fr_auto]">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              {language === 'vi' ? 'Cloud Save' : 'Cloud Save'}
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              {language === 'vi'
+                ? 'Luu mau thiep theo tai khoan Google de mo lai tren bat ky trinh duyet nao.'
+                : 'Save your wedding card under your Google account and reopen it from any browser.'}
+            </p>
+            {cloudMessage ? <p className="mt-2 text-sm text-green-700">{cloudMessage}</p> : null}
+            {cloudError ? <p className="mt-2 text-sm text-red-600">{cloudError}</p> : null}
+          </div>
+
+          <div className="rounded-xl bg-[#faf7f2] p-4 text-sm text-gray-600">
+            <p className="font-medium text-gray-900">
+              {selectedDesignId
+                ? language === 'vi'
+                  ? 'Dang sua ban da luu'
+                  : 'Editing saved design'
+                : language === 'vi'
+                  ? 'Ban nhap moi'
+                  : 'New draft'}
+            </p>
+            <p className="mt-1 break-all">
+              {user?.email ??
+                (language === 'vi' ? 'Chua dang nhap Google' : 'Google sign-in not available')}
+            </p>
+          </div>
+
+          <button
+            onClick={handleSaveDesign}
+            disabled={!isAuthenticated || isSaving}
+            className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
+            style={{ backgroundColor: '#8B0000' }}
+          >
+            {isSaving ? <LoaderCircle className="animate-spin" size={16} /> : <Save size={16} />}
+            <span>
+              {selectedDesignId
+                ? language === 'vi'
+                  ? 'Cap nhat cloud'
+                  : 'Update Cloud Save'
+                : language === 'vi'
+                  ? 'Luu len cloud'
+                  : 'Save to Cloud'}
+            </span>
+          </button>
+        </div>
+
+        <div className="grid gap-8 xl:grid-cols-[1.2fr_1fr_0.9fr]">
           <div className="space-y-6 rounded-2xl bg-white p-6 shadow-sm">
             <div>
               <h2 className="mb-4 text-lg font-semibold text-gray-900">
@@ -356,8 +555,100 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
               </div>
             </div>
           </div>
+
+          <aside className="rounded-2xl bg-white p-6 shadow-sm xl:self-start">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {language === 'vi' ? 'Mau da luu' : 'Saved Designs'}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {language === 'vi'
+                    ? 'Du lieu duoc luu theo tai khoan va dong bo qua cloud API.'
+                    : 'Saved under the signed-in account and synced through the cloud API.'}
+                </p>
+              </div>
+            </div>
+
+            {!isAuthenticated ? (
+              <p className="rounded-xl bg-[#faf7f2] p-4 text-sm text-gray-600">
+                {language === 'vi'
+                  ? 'Dang nhap bang Google de mo tinh nang luu va tai thiet ke tren cloud.'
+                  : 'Sign in with Google to enable cloud save and design restore.'}
+              </p>
+            ) : isLoadingDesigns ? (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <LoaderCircle className="animate-spin" size={16} />
+                <span>{language === 'vi' ? 'Dang tai du lieu...' : 'Loading designs...'}</span>
+              </div>
+            ) : savedDesigns.length === 0 ? (
+              <p className="rounded-xl bg-[#faf7f2] p-4 text-sm text-gray-600">
+                {language === 'vi'
+                  ? 'Chua co thiet ke nao duoc luu. Hay luu ban nhap dau tien len cloud.'
+                  : 'No saved designs yet. Save your first draft to the cloud.'}
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {savedDesigns.map((design) => (
+                  <div
+                    key={design.id}
+                    className={`rounded-xl border p-4 transition-colors ${
+                      selectedDesignId === design.id ? 'border-amber-300 bg-amber-50/50' : 'border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-gray-900">{design.title}</p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {new Date(design.updatedAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => void handleDeleteDesign(design)}
+                        disabled={isDeletingId === design.id}
+                        className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 disabled:opacity-50"
+                        aria-label={language === 'vi' ? 'Xoa thiet ke' : 'Delete design'}
+                      >
+                        {isDeletingId === design.id ? (
+                          <LoaderCircle className="animate-spin" size={15} />
+                        ) : (
+                          <Trash2 size={15} />
+                        )}
+                      </button>
+                    </div>
+
+                    <p className="mt-3 text-sm text-gray-600">
+                      {(design.cardData.groomName || (language === 'vi' ? 'Chu re' : 'Groom'))}
+                      {' & '}
+                      {(design.cardData.brideName || (language === 'vi' ? 'Co dau' : 'Bride'))}
+                    </p>
+
+                    <button
+                      onClick={() => handleLoadDesign(design)}
+                      className="mt-3 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                    >
+                      {language === 'vi' ? 'Tai vao trinh sua' : 'Load into Editor'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </aside>
         </div>
       </div>
     </main>
   );
+}
+
+function buildDesignTitle(cardData: CardData, sequence: number, language: string) {
+  const groom = cardData.groomName.trim();
+  const bride = cardData.brideName.trim();
+
+  if (groom || bride) {
+    return `${groom || (language === 'vi' ? 'Chu re' : 'Groom')} & ${
+      bride || (language === 'vi' ? 'Co dau' : 'Bride')
+    }`;
+  }
+
+  return language === 'vi' ? `Ban nhap thiep #${sequence}` : `Wedding Card Draft #${sequence}`;
 }
