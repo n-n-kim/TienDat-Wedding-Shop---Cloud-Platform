@@ -126,10 +126,14 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
       );
       await loadSavedDesigns();
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : null;
+
       setCloudError(
-        language === 'vi'
-          ? 'Khong the luu thiet ke. Hay kiem tra API cloud.'
-          : 'Could not save design. Check the cloud API configuration.',
+        message ??
+          (language === 'vi'
+            ? 'Khong the luu thiet ke. Hay kiem tra API cloud.'
+            : 'Could not save design. Check the cloud API configuration.'),
       );
     } finally {
       setIsSaving(false);
@@ -169,11 +173,15 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
           ? 'Da xoa thiet ke khoi cloud.'
           : 'Design deleted from the cloud.',
       );
-    } catch {
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : null;
+
       setCloudError(
-        language === 'vi'
-          ? 'Khong the xoa thiet ke.'
-          : 'Could not delete the design.',
+        message ??
+          (language === 'vi'
+            ? 'Khong the xoa thiet ke.'
+            : 'Could not delete the design.'),
       );
     } finally {
       setIsDeletingId(null);
@@ -194,11 +202,15 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
     try {
       const designs = await listWeddingCardDesigns();
       setSavedDesigns(designs);
-    } catch {
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : null;
+
       setCloudError(
-        language === 'vi'
-          ? 'Khong the tai danh sach thiet ke da luu.'
-          : 'Could not load saved designs.',
+        message ??
+          (language === 'vi'
+            ? 'Khong the tai danh sach thiet ke da luu.'
+            : 'Could not load saved designs.'),
       );
     } finally {
       setIsLoadingDesigns(false);

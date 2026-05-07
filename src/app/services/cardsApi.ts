@@ -8,7 +8,7 @@ export async function listWeddingCardDesigns(): Promise<WeddingCardDesign[]> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to load saved designs.');
+    throw await buildApiError(response, 'Failed to load saved designs.');
   }
 
   return (await response.json()) as WeddingCardDesign[];
@@ -27,7 +27,7 @@ export async function createWeddingCardDesign(
   });
 
   if (!response.ok) {
-    throw new Error('Failed to save design.');
+    throw await buildApiError(response, 'Failed to save design.');
   }
 
   return (await response.json()) as WeddingCardDesign;
@@ -47,7 +47,7 @@ export async function updateWeddingCardDesign(
   });
 
   if (!response.ok) {
-    throw new Error('Failed to update design.');
+    throw await buildApiError(response, 'Failed to update design.');
   }
 
   return (await response.json()) as WeddingCardDesign;
@@ -60,8 +60,22 @@ export async function deleteWeddingCardDesign(id: string): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to delete design.');
+    throw await buildApiError(response, 'Failed to delete design.');
   }
+}
+
+async function buildApiError(response: Response, fallbackMessage: string): Promise<Error> {
+  try {
+    const data = (await response.json()) as { message?: string };
+
+    if (data.message) {
+      return new Error(data.message);
+    }
+  } catch {
+    // Ignore JSON parsing errors and fall back to the generic message.
+  }
+
+  return new Error(fallbackMessage);
 }
 
 function getAuthHeaders(): Record<string, string> {
