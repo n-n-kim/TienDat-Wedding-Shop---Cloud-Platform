@@ -37,6 +37,7 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
           name: payload.name,
           email: payload.email,
           avatar: payload.picture,
+          idToken: response.credential,
         };
 
         login(userData);
@@ -119,6 +120,7 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
       name: language === 'vi' ? 'Nguoi dung demo' : 'Demo User',
       email: 'demo@tiendat.com',
       avatar: 'https://ui-avatars.com/api/?name=Demo+User&background=8B0000&color=fff',
+      idToken: null,
     };
 
     login(mockUser);
@@ -180,6 +182,11 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
               >
                 {language === 'vi' ? 'Tiep tuc voi tu cach khach' : 'Continue as guest'}
               </button>
+              <p className="text-center text-xs text-gray-400">
+                {language === 'vi'
+                  ? 'Tai khoan khach khong the luu thiet ke len cloud.'
+                  : 'Guest mode cannot save designs to the cloud.'}
+              </p>
             </div>
 
             <p className="mt-6 text-center text-xs text-gray-400">

@@ -3,13 +3,7 @@ const allowedBackgrounds = new Set(['floral', 'gradient', 'minimal', 'luxury']);
 const allowedStatuses = new Set(['draft', 'submitted']);
 
 function validateCreatePayload(payload) {
-  const base = validateBasePayload(payload);
-
-  if (!payload.userEmail || !payload.userName) {
-    return 'userEmail and userName are required.';
-  }
-
-  return base;
+  return validateBasePayload(payload);
 }
 
 function validateUpdatePayload(payload) {
@@ -19,10 +13,6 @@ function validateUpdatePayload(payload) {
 function validateBasePayload(payload) {
   if (!payload || typeof payload !== 'object') {
     return 'Request body must be a JSON object.';
-  }
-
-  if (!payload.userId || typeof payload.userId !== 'string') {
-    return 'userId is required.';
   }
 
   if (!payload.title || typeof payload.title !== 'string') {

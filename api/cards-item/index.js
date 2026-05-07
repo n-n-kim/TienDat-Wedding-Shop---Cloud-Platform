@@ -3,6 +3,7 @@ const {
   getDesign,
   updateDesign,
 } = require('../shared/cardsRepository');
+const { requireAuthenticatedUser } = require('../shared/googleAuth');
 const { json } = require('../shared/http');
 const { validateUpdatePayload } = require('../shared/cardsValidation');
 
@@ -10,14 +11,14 @@ module.exports = async function (context, req) {
   const designId = context.bindingData.id;
 
   try {
+    const authenticatedUser = await requireAuthenticatedUser(context, req);
+
+    if (!authenticatedUser) {
+      return;
+    }
+
     if (req.method === 'GET') {
-      const userId = req.query.userId;
-
-      if (!userId) {
-        return json(context, 400, { message: 'userId is required.' });
-      }
-
-      const design = await getDesign(userId, designId);
+      const design = await getDesign(authenticatedUser.id, designId);
 
       if (!design) {
         return json(context, 404, { message: 'Design not found.' });
@@ -33,7 +34,7 @@ module.exports = async function (context, req) {
         return json(context, 400, { message: validationError });
       }
 
-      const design = await updateDesign(req.body.userId, designId, req.body);
+      const design = await updateDesign(authenticatedUser.id, designId, req.body);
 
       if (!design) {
         return json(context, 404, { message: 'Design not found.' });
@@ -43,13 +44,7 @@ module.exports = async function (context, req) {
     }
 
     if (req.method === 'DELETE') {
-      const userId = req.query.userId;
-
-      if (!userId) {
-        return json(context, 400, { message: 'userId is required.' });
-      }
-
-      const deleted = await deleteDesign(userId, designId);
+      const deleted = await deleteDesign(authenticatedUser.id, designId);
 
       if (!deleted) {
         return json(context, 404, { message: 'Design not found.' });

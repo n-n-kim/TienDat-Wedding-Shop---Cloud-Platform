@@ -30,11 +30,15 @@ Frontend wedding platform built with React, TypeScript, and Vite. The project is
 
 ## API Contract
 
-- `GET /api/cards?userId=<google-user-id>`
+- `GET /api/cards`
 - `POST /api/cards`
-- `GET /api/cards/{id}?userId=<google-user-id>`
+- `GET /api/cards/{id}`
 - `PUT /api/cards/{id}`
-- `DELETE /api/cards/{id}?userId=<google-user-id>`
+- `DELETE /api/cards/{id}`
+
+Every request must include:
+
+- `Authorization: Bearer <google-id-token>`
 
 ## Manual Azure Setup
 
@@ -43,6 +47,7 @@ Frontend wedding platform built with React, TypeScript, and Vite. The project is
 3. Copy the storage account connection string.
 4. In Azure Static Web Apps, open `Environment variables` and add:
    - `VITE_GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_ID`
    - `AZURE_STORAGE_CONNECTION_STRING`
    - `AZURE_TABLE_NAME`
 5. Save the variables and redeploy the app.
@@ -55,7 +60,11 @@ If you want to run Functions locally later, copy:
 
 Then replace the placeholder storage values with your real connection string.
 
+Also add your Google OAuth client id to:
+
+- `GOOGLE_CLIENT_ID`
+
 ## Notes
 
-- The current API trusts the signed-in user data sent by the frontend.
-- For a production-grade version, the backend should verify the Google ID token before reading or writing user-specific designs.
+- The frontend sends the Google ID token in the `Authorization` header.
+- Azure Functions verify that token and derive `userId`, `userEmail`, and `userName` from it before reading or writing user-specific designs.

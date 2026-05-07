@@ -26,9 +26,6 @@ export interface WeddingCardDesign {
 }
 
 export interface SaveWeddingCardInput {
-  userId: string;
-  userEmail: string;
-  userName: string;
   title: string;
   status: CardStatus;
   cardData: CardData;

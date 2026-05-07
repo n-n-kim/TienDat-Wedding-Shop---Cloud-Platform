@@ -42,7 +42,7 @@ const initialCardData: CardData = {
 
 export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
   const { language } = useLanguage();
-  const { isAuthenticated, user } = useAuth();
+  const { canUseCloudSave, user } = useAuth();
 
   const [cardData, setCardData] = useState<CardData>(initialCardData);
   const [savedDesigns, setSavedDesigns] = useState<WeddingCardDesign[]>([]);
@@ -68,14 +68,14 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
   }, [cardData]);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    if (!canUseCloudSave || !user) {
       setSavedDesigns([]);
       setSelectedDesignId(null);
       return;
     }
 
-    void loadSavedDesigns(user.id);
-  }, [isAuthenticated, user]);
+    void loadSavedDesigns();
+  }, [canUseCloudSave, user]);
 
   const handleChange = (field: keyof CardData, value: string) => {
     setCardData((prev) => ({ ...prev, [field]: value }));
@@ -108,15 +108,11 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
     try {
       const design = selectedDesignId
         ? await updateWeddingCardDesign(selectedDesignId, {
-            userId: user.id,
             title,
             status: 'draft',
             cardData,
           })
         : await createWeddingCardDesign({
-            userId: user.id,
-            userEmail: user.email,
-            userName: user.name,
             title,
             status: 'draft',
             cardData,
@@ -128,7 +124,7 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
           ? 'Da luu thiet ke len cloud thanh cong.'
           : 'Design saved to the cloud successfully.',
       );
-      await loadSavedDesigns(user.id);
+      await loadSavedDesigns();
     } catch (error) {
       setCloudError(
         language === 'vi'
@@ -161,7 +157,7 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
     setCloudMessage(null);
 
     try {
-      await deleteWeddingCardDesign(design.id, user.id);
+      await deleteWeddingCardDesign(design.id);
       setSavedDesigns((prev) => prev.filter((item) => item.id !== design.id));
 
       if (selectedDesignId === design.id) {
@@ -191,12 +187,12 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
     setCloudError(null);
   };
 
-  const loadSavedDesigns = async (userId: string) => {
+  const loadSavedDesigns = async () => {
     setIsLoadingDesigns(true);
     setCloudError(null);
 
     try {
-      const designs = await listWeddingCardDesigns(userId);
+      const designs = await listWeddingCardDesigns();
       setSavedDesigns(designs);
     } catch {
       setCloudError(
@@ -255,7 +251,7 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
                 <h1 className="text-xl font-semibold text-gray-900">
                   {language === 'vi' ? 'Thiet ke thiep cuoi' : 'Design Wedding Card'}
                 </h1>
-                {isAuthenticated ? (
+                {canUseCloudSave ? (
                   <p className="text-xs text-green-700">
                     {language === 'vi'
                       ? 'Ban nhap dang duoc luu local va co the dong bo len cloud'
@@ -321,9 +317,9 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
             </p>
           </div>
 
-          <button
-            onClick={handleSaveDesign}
-            disabled={!isAuthenticated || isSaving}
+            <button
+              onClick={handleSaveDesign}
+            disabled={!canUseCloudSave || isSaving}
             className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
             style={{ backgroundColor: '#8B0000' }}
           >
@@ -570,7 +566,7 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
               </div>
             </div>
 
-            {!isAuthenticated ? (
+            {!canUseCloudSave ? (
               <p className="rounded-xl bg-[#faf7f2] p-4 text-sm text-gray-600">
                 {language === 'vi'
                   ? 'Dang nhap bang Google de mo tinh nang luu va tai thiet ke tren cloud.'

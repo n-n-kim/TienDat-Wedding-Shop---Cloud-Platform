@@ -1,17 +1,18 @@
 const { createDesign, listDesignsByUser } = require('../shared/cardsRepository');
+const { requireAuthenticatedUser } = require('../shared/googleAuth');
 const { json } = require('../shared/http');
 const { validateCreatePayload } = require('../shared/cardsValidation');
 
 module.exports = async function (context, req) {
   try {
+    const authenticatedUser = await requireAuthenticatedUser(context, req);
+
+    if (!authenticatedUser) {
+      return;
+    }
+
     if (req.method === 'GET') {
-      const userId = req.query.userId;
-
-      if (!userId) {
-        return json(context, 400, { message: 'userId is required.' });
-      }
-
-      const designs = await listDesignsByUser(userId);
+      const designs = await listDesignsByUser(authenticatedUser.id);
       return json(context, 200, designs);
     }
 
@@ -22,7 +23,12 @@ module.exports = async function (context, req) {
         return json(context, 400, { message: validationError });
       }
 
-      const design = await createDesign(req.body);
+      const design = await createDesign({
+        ...req.body,
+        userId: authenticatedUser.id,
+        userEmail: authenticatedUser.email,
+        userName: authenticatedUser.name,
+      });
       return json(context, 201, design);
     }
 
