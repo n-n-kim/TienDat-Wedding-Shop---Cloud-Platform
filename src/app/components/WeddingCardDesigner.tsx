@@ -10,9 +10,11 @@ import {
 } from '../services/cardsApi';
 import type { CardData, WeddingCardDesign } from '../types/weddingCard';
 
+type LoginRedirect = 'home' | 'designer';
+
 interface WeddingCardDesignerProps {
   onBack: () => void;
-  onOpenLogin: () => void;
+  onOpenLogin: (redirectTo?: LoginRedirect) => void;
 }
 
 const colorSchemes = [
@@ -78,6 +80,12 @@ export function WeddingCardDesigner({ onBack, onOpenLogin }: WeddingCardDesigner
     void loadSavedDesigns();
   }, [canUseCloudSave, user]);
 
+  useEffect(() => {
+    if (canUseCloudSave) {
+      setCloudError(null);
+    }
+  }, [canUseCloudSave]);
+
   const handleChange = (field: keyof CardData, value: string) => {
     setCardData((prev) => ({ ...prev, [field]: value }));
   };
@@ -91,11 +99,11 @@ export function WeddingCardDesigner({ onBack, onOpenLogin }: WeddingCardDesigner
   };
 
   const handleSaveDesign = async () => {
-    if (!user) {
+    if (!canUseCloudSave || !user?.idToken) {
       setCloudError(
         language === 'vi'
-          ? 'Vui long dang nhap de luu thiet ke len cloud.'
-          : 'Please sign in to save designs to the cloud.',
+          ? 'Phien dang nhap Google khong hop le. Vui long dang nhap lai de luu thiet ke len cloud.'
+          : 'Your Google sign-in is no longer valid. Please sign in again to save designs to the cloud.',
       );
       return;
     }
@@ -314,7 +322,7 @@ export function WeddingCardDesigner({ onBack, onOpenLogin }: WeddingCardDesigner
             {cloudError ? <p className="mt-2 text-sm text-red-600">{cloudError}</p> : null}
             {!canUseCloudSave ? (
               <button
-                onClick={onOpenLogin}
+                onClick={() => onOpenLogin('designer')}
                 className="mt-3 rounded-lg border border-amber-300 px-3 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50"
               >
                 {language === 'vi' ? 'Dang nhap lai de luu cloud' : 'Sign in again for cloud save'}

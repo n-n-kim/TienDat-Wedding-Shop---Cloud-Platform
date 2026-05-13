@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 
+type LoginRedirect = 'home' | 'designer';
+
 interface HeaderProps {
   onOpenDesigner: () => void;
-  onOpenLogin: () => void;
+  onOpenLogin: (redirectTo?: LoginRedirect) => void;
 }
 
 export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
@@ -54,7 +56,7 @@ export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
                   return;
                 }
 
-                onOpenLogin();
+                onOpenLogin('designer');
               }}
               className="flex items-center gap-1.5 rounded-lg px-4 py-1.5 transition-all hover:shadow-md"
               style={{ backgroundColor: '#8B0000', color: 'white', fontSize: '0.875rem' }}

@@ -15,19 +15,23 @@ import { AuthProvider } from './contexts/AuthContext';
 
 type View = 'home' | 'login' | 'designer';
 
+type LoginRedirect = Exclude<View, 'login'>;
+
 function AppContent() {
   const [currentView, setCurrentView] = useState<View>('home');
-  const [viewBeforeLogin, setViewBeforeLogin] = useState<Exclude<View, 'login'>>('home');
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState<LoginRedirect>('home');
+  const [previousViewBeforeLogin, setPreviousViewBeforeLogin] = useState<LoginRedirect>('home');
 
   const openDesigner = () => {
     setCurrentView('designer');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const openLogin = () => {
+  const openLogin = (redirectTo: LoginRedirect = 'home') => {
     if (currentView !== 'login') {
-      setViewBeforeLogin(currentView);
+      setPreviousViewBeforeLogin(currentView as LoginRedirect);
     }
+    setRedirectAfterLogin(redirectTo);
     setCurrentView('login');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -37,22 +41,27 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const goBack = () => {
+    setCurrentView(previousViewBeforeLogin);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleLoginSuccess = () => {
-    setCurrentView(viewBeforeLogin);
+    setCurrentView(redirectAfterLogin);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (currentView === 'login') {
-    return <LoginPage onBack={goHome} onLoginSuccess={handleLoginSuccess} />;
+    return <LoginPage onBack={goBack} onLoginSuccess={handleLoginSuccess} />;
   }
 
   if (currentView === 'designer') {
-    return <WeddingCardDesigner onBack={goHome} onOpenLogin={openLogin} />;
+    return <WeddingCardDesigner onBack={goHome} onOpenLogin={() => openLogin('designer')} />;
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <Header onOpenDesigner={openDesigner} onOpenLogin={openLogin} />
+      <Header onOpenDesigner={openDesigner} onOpenLogin={(redirectTo) => openLogin(redirectTo)} />
       <Hero />
       <CloudFeatures />
       <Services />
