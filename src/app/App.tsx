@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
-import { CloudFeatures } from './components/CloudFeatures';
-import { Services } from './components/Services';
-import { WeddingAccessories } from './components/WeddingAccessories';
 import { Process } from './components/Process';
-import { WhyChooseUs } from './components/WhyChooseUs';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { WeddingCardDesigner } from './components/WeddingCardDesigner';
 import { LoginPage } from './components/LoginPage';
+import { AdminChatPage } from './components/AdminChatPage';
+import { SamplesPage } from './components/SamplesPage';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
 
-type View = 'home' | 'login' | 'designer';
+type View = 'home' | 'login' | 'designer' | 'adminChat' | 'samples';
 
 type LoginRedirect = Exclude<View, 'login'>;
 
@@ -24,6 +22,16 @@ function AppContent() {
 
   const openDesigner = () => {
     setCurrentView('designer');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const openAdminChat = () => {
+    setCurrentView('adminChat');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const openSamples = () => {
+    setCurrentView('samples');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -59,16 +67,25 @@ function AppContent() {
     return <WeddingCardDesigner onBack={goHome} onOpenLogin={() => openLogin('designer')} />;
   }
 
+  if (currentView === 'adminChat') {
+    return <AdminChatPage onBack={goHome} onOpenLogin={() => openLogin('adminChat')} />;
+  }
+
+  if (currentView === 'samples') {
+    return <SamplesPage onBack={goHome} onOpenContact={goHome} />;
+  }
+
   return (
     <div className="min-h-screen bg-white">
-      <Header onOpenDesigner={openDesigner} onOpenLogin={(redirectTo) => openLogin(redirectTo)} />
-      <Hero />
-      <CloudFeatures />
-      <Services />
-      <WeddingAccessories />
+      <Header
+        onOpenAdminChat={openAdminChat}
+        onOpenDesigner={openDesigner}
+        onOpenSamples={openSamples}
+        onOpenLogin={(redirectTo) => openLogin(redirectTo)}
+      />
+      <Hero onOpenSamples={openSamples} />
       <Process />
-      <WhyChooseUs />
-      <Contact />
+      <Contact onOpenLogin={() => openLogin('home')} />
       <Footer />
     </div>
   );

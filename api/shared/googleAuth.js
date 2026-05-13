@@ -2,6 +2,7 @@ const { OAuth2Client } = require('google-auth-library');
 const { json } = require('./http');
 
 const GOOGLE_CLIENT_IDS = getAllowedClientIds();
+const ADMIN_EMAILS = getAdminEmails();
 
 let oauthClient;
 
@@ -73,6 +74,26 @@ function getAllowedClientIds() {
     .filter(Boolean);
 }
 
+function getAdminEmails() {
+  const rawValue =
+    process.env.ADMIN_EMAILS ||
+    process.env.VITE_ADMIN_EMAILS ||
+    'kim1801x5@gmail.com';
+
+  return rawValue
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function isAdminUser(user) {
+  if (!user?.email) {
+    return false;
+  }
+
+  return ADMIN_EMAILS.includes(user.email.toLowerCase());
+}
+
 function extractBearerToken(req) {
   const directGoogleToken =
     req.headers?.['x-google-id-token'] ||
@@ -110,5 +131,6 @@ function decodeJwtPayload(token) {
 }
 
 module.exports = {
+  isAdminUser,
   requireAuthenticatedUser,
 };

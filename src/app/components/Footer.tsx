@@ -21,9 +21,8 @@ export function Footer() {
               {t('footer.services')}
             </h4>
             <ul className="space-y-3 opacity-70" style={{ fontSize: '0.875rem' }}>
-              <li><a href="#wedding" className="hover:opacity-100 transition-opacity">{t('nav.wedding')}</a></li>
-              <li><a href="#business" className="hover:opacity-100 transition-opacity">{t('nav.business')}</a></li>
-              <li><a href="#accessories" className="hover:opacity-100 transition-opacity">{t('nav.accessories')}</a></li>
+              <li><a href="#home" className="hover:opacity-100 transition-opacity">{t('nav.home')}</a></li>
+              <li><a href="#process" className="hover:opacity-100 transition-opacity">{t('footer.about.process')}</a></li>
               <li><a href="#contact" className="hover:opacity-100 transition-opacity">{t('nav.contact')}</a></li>
             </ul>
           </div>
@@ -33,10 +32,9 @@ export function Footer() {
               {t('footer.about')}
             </h4>
             <ul className="space-y-3 opacity-70" style={{ fontSize: '0.875rem' }}>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{t('footer.about.intro')}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{t('footer.about.process')}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{t('footer.about.policy')}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{t('nav.contact')}</a></li>
+              <li><a href="#home" className="hover:opacity-100 transition-opacity">{t('footer.about.intro')}</a></li>
+              <li><a href="#process" className="hover:opacity-100 transition-opacity">{t('footer.about.process')}</a></li>
+              <li><a href="#contact" className="hover:opacity-100 transition-opacity">{t('nav.contact')}</a></li>
             </ul>
           </div>
         </div>

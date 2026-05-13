@@ -5,6 +5,9 @@
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "GOOGLE_CLIENT_ID": "your-google-client-id.apps.googleusercontent.com",
     "AZURE_STORAGE_CONNECTION_STRING": "UseDevelopmentStorage=true",
-    "AZURE_TABLE_NAME": "WeddingCardDesigns"
+    "AZURE_TABLE_NAME": "WeddingCardDesigns",
+    "AZURE_CHAT_CONVERSATIONS_TABLE_NAME": "ConsultationConversations",
+    "AZURE_CHAT_MESSAGES_TABLE_NAME": "ConsultationMessages",
+    "ADMIN_EMAILS": "admin@example.com"
   }
 }

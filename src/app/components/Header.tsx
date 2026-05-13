@@ -1,24 +1,26 @@
-import { Menu, X, Globe, Plus, User, LogOut } from 'lucide-react';
+import { Menu, X, Globe, Plus, User, LogOut, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 
-type LoginRedirect = 'home' | 'designer';
+type LoginRedirect = 'home' | 'designer' | 'adminChat';
 
 interface HeaderProps {
+  onOpenAdminChat: () => void;
   onOpenDesigner: () => void;
+  onOpenSamples: () => void;
   onOpenLogin: (redirectTo?: LoginRedirect) => void;
 }
 
-export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
+export function Header({ onOpenAdminChat, onOpenDesigner, onOpenSamples, onOpenLogin }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAdmin, isAuthenticated, logout } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-20 items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div>
               <div className="font-semibold" style={{ fontSize: '1.5rem', color: '#B8860B' }}>
@@ -30,16 +32,14 @@ export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
             </div>
           </div>
 
-          <nav className="hidden items-center gap-8 md:flex">
-            <a href="#home" className="transition-opacity hover:opacity-60">{t('nav.home')}</a>
-            <a href="#services" className="transition-opacity hover:opacity-60">{t('nav.services')}</a>
-            <a href="#wedding" className="transition-opacity hover:opacity-60">{t('nav.wedding')}</a>
-            <a href="#business" className="transition-opacity hover:opacity-60">{t('nav.business')}</a>
-            <a href="#accessories" className="transition-opacity hover:opacity-60">{t('nav.accessories')}</a>
-            <a href="#contact" className="transition-opacity hover:opacity-60">{t('nav.contact')}</a>
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 text-sm lg:gap-5 lg:text-[0.95rem] xl:gap-7 md:flex">
+            <a href="#home" className="whitespace-nowrap transition-opacity hover:opacity-60">{t('nav.home')}</a>
+            <button onClick={onOpenSamples} className="whitespace-nowrap transition-opacity hover:opacity-60">{t('hero.btn1')}</button>
+            <a href="#process" className="whitespace-nowrap transition-opacity hover:opacity-60">{t('footer.about.process')}</a>
+            <a href="#contact" className="whitespace-nowrap transition-opacity hover:opacity-60">{t('nav.contact')}</a>
           </nav>
 
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="hidden shrink-0 items-center gap-2 md:flex">
             <button
               onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
               className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-all hover:bg-gray-100"
@@ -48,6 +48,17 @@ export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
               <Globe size={16} />
               <span className="uppercase" style={{ fontSize: '0.75rem' }}>{language}</span>
             </button>
+
+            {isAdmin ? (
+              <button
+                onClick={onOpenAdminChat}
+                className="flex items-center gap-1.5 rounded-lg px-4 py-1.5 transition-all hover:shadow-md"
+                style={{ backgroundColor: '#B8860B', color: 'white', fontSize: '0.875rem' }}
+              >
+                <MessageCircle size={16} />
+                <span>{language === 'vi' ? 'Chat admin' : 'Admin chat'}</span>
+              </button>
+            ) : null}
 
             <button
               onClick={() => {
@@ -62,7 +73,7 @@ export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
               style={{ backgroundColor: '#8B0000', color: 'white', fontSize: '0.875rem' }}
             >
               <Plus size={16} />
-              <span>{language === 'vi' ? 'Thiet ke' : 'Design'}</span>
+              <span>{language === 'vi' ? 'Thiết kế' : 'Design'}</span>
             </button>
 
             {isAuthenticated ? (
@@ -109,10 +120,16 @@ export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
           <div className="border-t border-gray-100 py-4 md:hidden">
             <nav className="flex flex-col gap-4">
               <a href="#home" className="transition-opacity hover:opacity-60">{t('nav.home')}</a>
-              <a href="#services" className="transition-opacity hover:opacity-60">{t('nav.services')}</a>
-              <a href="#wedding" className="transition-opacity hover:opacity-60">{t('nav.wedding')}</a>
-              <a href="#business" className="transition-opacity hover:opacity-60">{t('nav.business')}</a>
-              <a href="#accessories" className="transition-opacity hover:opacity-60">{t('nav.accessories')}</a>
+              <button
+                onClick={() => {
+                  onOpenSamples();
+                  setMobileMenuOpen(false);
+                }}
+                className="text-left transition-opacity hover:opacity-60"
+              >
+                {t('hero.btn1')}
+              </button>
+              <a href="#process" className="transition-opacity hover:opacity-60">{t('footer.about.process')}</a>
               <a href="#contact" className="transition-opacity hover:opacity-60">{t('nav.contact')}</a>
               <button
                 onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
@@ -121,6 +138,19 @@ export function Header({ onOpenDesigner, onOpenLogin }: HeaderProps) {
                 <Globe size={18} />
                 <span className="uppercase">{language === 'vi' ? 'English' : 'Tieng Viet'}</span>
               </button>
+              {isAdmin ? (
+                <button
+                  onClick={() => {
+                    onOpenAdminChat();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex w-full justify-center gap-2 rounded-lg px-4 py-2 transition-all hover:shadow-md"
+                  style={{ backgroundColor: '#B8860B', color: 'white' }}
+                >
+                  <MessageCircle size={18} />
+                  <span>{language === 'vi' ? 'Chat admin' : 'Admin chat'}</span>
+                </button>
+              ) : null}
               <button
                 onClick={() => {
                   if (isAuthenticated) {

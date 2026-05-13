@@ -1,6 +1,6 @@
 # Tien Dat Wedding Platform
 
-Frontend wedding platform built with React, TypeScript, and Vite. The project is deployed on Azure Static Web Apps, supports Google Sign-In, and now includes a cloud-ready wedding card save/load flow backed by Azure Functions and Azure Table Storage.
+Frontend wedding platform built with React, TypeScript, and Vite. The project is deployed on Azure Static Web Apps, supports Google Sign-In, and now includes both a cloud-ready wedding card save/load flow and a consultation chat flow backed by Azure Functions and Azure Table Storage.
 
 ## Tech Stack
 
@@ -10,6 +10,7 @@ Frontend wedding platform built with React, TypeScript, and Vite. The project is
 - Hosting: Azure Static Web Apps
 - API: Azure Functions
 - Cloud data store: Azure Table Storage
+- Consultation chat: user/admin chat persisted in Azure Table Storage with polling refresh
 
 ## Run Frontend Locally
 
@@ -47,9 +48,13 @@ Every request must include:
 3. Copy the storage account connection string.
 4. In Azure Static Web Apps, open `Environment variables` and add:
    - `VITE_GOOGLE_CLIENT_ID`
+   - `VITE_ADMIN_EMAILS`
    - `GOOGLE_CLIENT_ID`
    - `AZURE_STORAGE_CONNECTION_STRING`
    - `AZURE_TABLE_NAME`
+   - `AZURE_CHAT_CONVERSATIONS_TABLE_NAME`
+   - `AZURE_CHAT_MESSAGES_TABLE_NAME`
+   - `ADMIN_EMAILS`
 5. Save the variables and redeploy the app.
 
 ## Local Function Settings
@@ -64,7 +69,12 @@ Also add your Google OAuth client id to:
 
 - `GOOGLE_CLIENT_ID`
 
+For the consultation chat admin dashboard, also add:
+
+- `ADMIN_EMAILS`
+
 ## Notes
 
 - The frontend sends the Google ID token in the `Authorization` header.
 - Azure Functions verify that token and derive `userId`, `userEmail`, and `userName` from it before reading or writing user-specific designs.
+- The consultation chat uses the same Google token flow. Users chat from the contact section, and admin accounts listed in `ADMIN_EMAILS` / `VITE_ADMIN_EMAILS` can open the admin dashboard.

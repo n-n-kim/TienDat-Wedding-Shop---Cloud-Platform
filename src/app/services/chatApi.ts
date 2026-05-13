@@ -1,0 +1,131 @@
+import type {
+  ChatConversation,
+  ChatMessage,
+  ConversationStatus,
+  CreateConversationInput,
+  SendChatMessageInput,
+} from '../types/chat';
+import {
+  clearStoredUser,
+  getGoogleSessionErrorMessage,
+  getStoredUser,
+} from './googleSession';
+
+const API_BASE = '/api/chat/conversations';
+
+export async function listChatConversations(): Promise<ChatConversation[]> {
+  const response = await fetch(API_BASE, {
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    throw await buildApiError(response, 'Failed to load conversations.');
+  }
+
+  return (await response.json()) as ChatConversation[];
+}
+
+export async function createChatConversation(
+  payload: CreateConversationInput,
+): Promise<ChatConversation> {
+  const response = await fetch(API_BASE, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw await buildApiError(response, 'Failed to create conversation.');
+  }
+
+  return (await response.json()) as ChatConversation;
+}
+
+export async function listConversationMessages(conversationId: string): Promise<ChatMessage[]> {
+  const response = await fetch(`${API_BASE}/${encodeURIComponent(conversationId)}/messages`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    throw await buildApiError(response, 'Failed to load messages.');
+  }
+
+  return (await response.json()) as ChatMessage[];
+}
+
+export async function sendChatMessage(
+  conversationId: string,
+  payload: SendChatMessageInput,
+): Promise<ChatMessage> {
+  const response = await fetch(`${API_BASE}/${encodeURIComponent(conversationId)}/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw await buildApiError(response, 'Failed to send message.');
+  }
+
+  return (await response.json()) as ChatMessage;
+}
+
+export async function updateConversationStatus(
+  conversationId: string,
+  status: ConversationStatus,
+): Promise<ChatConversation> {
+  const response = await fetch(`${API_BASE}/${encodeURIComponent(conversationId)}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    throw await buildApiError(response, 'Failed to update conversation status.');
+  }
+
+  return (await response.json()) as ChatConversation;
+}
+
+async function buildApiError(response: Response, fallbackMessage: string): Promise<Error> {
+  const responseMessage = await readApiErrorMessage(response);
+
+  if (response.status === 401) {
+    clearStoredUser();
+    return new Error(responseMessage ?? getGoogleSessionErrorMessage());
+  }
+
+  return new Error(responseMessage ?? fallbackMessage);
+}
+
+function getAuthHeaders(): Record<string, string> {
+  const user = getStoredUser();
+
+  if (!user?.idToken) {
+    return {};
+  }
+
+  return {
+    Authorization: `Bearer ${user.idToken}`,
+    'X-Google-Id-Token': user.idToken,
+  };
+}
+
+async function readApiErrorMessage(response: Response): Promise<string | null> {
+  try {
+    const data = (await response.json()) as { message?: string };
+
+    return data.message || null;
+  } catch {
+    return null;
+  }
+}

@@ -20,6 +20,7 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   canUseCloudSave: boolean;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const canUseCloudSave = Boolean(user?.idToken);
+  const isAdmin = isAdminEmail(user?.email);
 
   return (
     <AuthContext.Provider
@@ -67,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         isAuthenticated: !!user,
         canUseCloudSave,
+        isAdmin,
       }}
     >
       {children}
@@ -80,4 +83,17 @@ export function useAuth() {
     throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
+}
+
+function isAdminEmail(email?: string | null) {
+  if (!email) {
+    return false;
+  }
+
+  const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || 'kim1801x5@gmail.com')
+    .split(',')
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+
+  return adminEmails.includes(email.toLowerCase());
 }

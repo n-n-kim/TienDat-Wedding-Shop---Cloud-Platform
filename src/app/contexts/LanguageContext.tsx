@@ -23,7 +23,7 @@ const translations = {
     'header.cta': 'Đặt thiết kế ngay',
 
     // Hero
-    'hero.title': 'Thiệp Cưới & Danh Thiếp Đẹp, Tinh Tế, In Nhanh',
+    'hero.title': 'Thiệp Cưới & Danh Thiếp TIẾN ĐẠT',
     'hero.subtitle': 'Tiến Đạt mang đến các mẫu thiệp cưới, danh thiếp và sản phẩm in ấn được thiết kế chỉn chu, sang trọng và phù hợp với từng nhu cầu.',
     'hero.btn1': 'Xem mẫu thiết kế',
     'hero.btn2': 'Liên hệ tư vấn',
@@ -138,12 +138,12 @@ const translations = {
   },
   en: {
     // Header
-    'header.tagline': 'Wedding Cards • Business Cards • Printing',
+    'header.tagline': 'Wedding Cards • Printing',
     'nav.home': 'Home',
     'nav.services': 'Services',
     'nav.wedding': 'Wedding Cards',
     'nav.business': 'Business Cards',
-    'nav.accessories': 'Wedding Accessories',
+    'nav.accessories': 'Accessories',
     'nav.contact': 'Contact',
     'header.cta': 'Order Design Now',
 
