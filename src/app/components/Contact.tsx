@@ -190,7 +190,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
 
         <div className="grid gap-10 xl:grid-cols-[340px,1fr]">
           <aside className="space-y-6">
-            <div className="overflow-hidden rounded-[2rem] border border-red-100 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <div className="overflow-hidden rounded-none border border-red-100 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
               <div className="bg-[linear-gradient(135deg,#8B0000_0%,#B8860B_100%)] px-6 py-7 text-white">
                 {/* <div className="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs">
                   Messenger-style chat
@@ -206,7 +206,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
               </div>
 
               <div className="space-y-5 p-6">
-                <div className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4">
+                <div className="flex items-center gap-4 rounded-none bg-slate-50 p-4">
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-700 text-sm font-semibold text-white">
                     {ADMIN_PROFILE.avatarFallback}
                   </div>
@@ -230,7 +230,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
                       value={contactPhone}
                       onChange={(event) => setContactPhone(event.target.value)}
                       placeholder={language === 'vi' ? 'Nhập số điện thoại' : 'Enter phone number'}
-                      className="w-full rounded-2xl border border-gray-200 px-4 py-3 focus:border-amber-400 focus:outline-none"
+                      className="w-full rounded-none border border-gray-200 px-4 py-3 focus:border-amber-400 focus:outline-none"
                     />
                   </div>
                 ) : null}
@@ -238,7 +238,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
                 <div className="space-y-4 text-sm text-gray-600">
                   <div className="flex items-start gap-3">
                     <div
-                      className="flex h-10 w-10 items-center justify-center rounded-2xl"
+                      className="flex h-10 w-10 items-center justify-center rounded-none"
                       style={{ backgroundColor: '#FFF8DC' }}
                     >
                       <Phone size={18} style={{ color: '#8B0000' }} />
@@ -251,7 +251,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
 
                   <div className="flex items-start gap-3">
                     <div
-                      className="flex h-10 w-10 items-center justify-center rounded-2xl"
+                      className="flex h-10 w-10 items-center justify-center rounded-none"
                       style={{ backgroundColor: '#FFF8DC' }}
                     >
                       <MapPin size={18} style={{ color: '#B8860B' }} />
@@ -263,7 +263,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm text-gray-700">
+                <div className="rounded-none border border-amber-100 bg-amber-50 px-4 py-4 text-sm text-gray-700">
                   {language === 'vi'
                     ? 'Tài khoản admin mặc định là kim1801x5@gmail.com. Sau khi đăng nhập bằng Gmail này, admin sẽ thấy tất cả tin nhắn từ user.'
                     : 'The default admin account is kim1801x5@gmail.com. Once signed in with this Gmail, the admin can see all user messages.'}
@@ -271,14 +271,14 @@ export function Contact({ onOpenLogin }: ContactProps) {
 
                 <div className="flex gap-3">
                   <button
-                    className="flex flex-1 items-center justify-center gap-2 rounded-2xl border-2 py-3 transition-all hover:shadow-md"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-none border-2 py-3 transition-all hover:shadow-md"
                     style={{ borderColor: '#1877F2', color: '#1877F2' }}
                   >
                     <Facebook size={18} />
                     <span>Facebook</span>
                   </button>
                   <button
-                    className="flex flex-1 items-center justify-center gap-2 rounded-2xl border-2 py-3 transition-all hover:shadow-md"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-none border-2 py-3 transition-all hover:shadow-md"
                     style={{ borderColor: '#00A884', color: '#00A884' }}
                   >
                     <MessageCircle size={18} />
@@ -289,7 +289,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
             </div>
           </aside>
 
-          <div className="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+          <div className="overflow-hidden rounded-none border border-gray-100 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
               <div className="flex items-center gap-4">
                 <div className="relative">
@@ -332,7 +332,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
 
             {!canUseCloudSave ? (
               <div className="p-6 sm:p-8">
-                <div className="rounded-[1.75rem] border border-dashed border-gray-200 bg-slate-50 p-8 text-center">
+                <div className="rounded-none border border-dashed border-gray-200 bg-slate-50 p-8 text-center">
                   <MessageCircle className="mx-auto mb-4 text-amber-600" size={42} />
                   <h4 className="mb-3 text-2xl font-semibold text-gray-900">
                     {language === 'vi' ? 'Đăng nhập để bắt đầu chat' : 'Sign in to start chatting'}
@@ -348,7 +348,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
                   </p>
                   <button
                     onClick={onOpenLogin}
-                    className="rounded-full px-6 py-3 text-white transition-all hover:shadow-lg"
+                    className="rounded-none px-6 py-3 text-white transition-all hover:shadow-lg"
                     style={{ backgroundColor: '#8B0000' }}
                   >
                     {language === 'vi' ? 'Đăng nhập bằng Google' : 'Sign in with Google'}
@@ -359,7 +359,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
               <>
                 <div className="h-[540px] overflow-y-auto bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-4 py-6 sm:px-6">
                   {error ? (
-                    <div className="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <div className="mb-4 rounded-none border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
                       {error}
                     </div>
                   ) : null}
@@ -396,10 +396,10 @@ export function Contact({ onOpenLogin }: ContactProps) {
                             <div className={`max-w-[82%] ${isUserMessage ? 'items-end' : 'items-start'} flex flex-col`}>
                               <div className="mb-1 px-2 text-xs text-gray-500">{senderLabel}</div>
                               <div
-                                className={`rounded-[1.5rem] px-4 py-3 text-sm leading-6 shadow-sm ${
+                                className={`rounded-none px-4 py-3 text-sm leading-6 shadow-sm ${
                                   isUserMessage
-                                    ? 'rounded-br-md bg-[#0084ff] text-white'
-                                    : 'rounded-bl-md bg-white text-gray-800 border border-gray-100'
+                                    ? 'bg-[#0084ff] text-white'
+                                    : 'bg-white text-gray-800 border border-gray-100'
                                 }`}
                               >
                                 <div className="whitespace-pre-wrap">{message.content}</div>
@@ -423,7 +423,7 @@ export function Contact({ onOpenLogin }: ContactProps) {
 
                 <div className="border-t border-gray-100 bg-white px-4 py-4 sm:px-6">
                   <form onSubmit={handleSendMessage} className="space-y-3">
-                    <div className="flex items-end gap-3 rounded-[1.75rem] border border-gray-200 bg-slate-50 px-3 py-3 shadow-inner">
+                    <div className="flex items-end gap-3 rounded-none border border-gray-200 bg-slate-50 px-3 py-3 shadow-inner">
                       <textarea
                         rows={1}
                         value={draftMessage}

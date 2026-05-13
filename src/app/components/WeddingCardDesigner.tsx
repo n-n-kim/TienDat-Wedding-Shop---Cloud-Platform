@@ -161,7 +161,7 @@ export function WeddingCardDesigner({
   onOpenConsult,
   onOpenLogin,
 }: WeddingCardDesignerProps) {
-  const { language } = useLanguage();
+  useLanguage();
   const { canUseCloudSave, user } = useAuth();
 
   const [cardData, setCardData] = useState<CardData>(initialCardData);
@@ -220,9 +220,7 @@ export function WeddingCardDesigner({
   const handleSaveDesign = async () => {
     if (!canUseCloudSave || !user?.idToken) {
       setCloudError(
-        language === 'vi'
-          ? 'Phien dang nhap Google khong hop le. Vui long dang nhap lai de luu thiet ke len cloud.'
-          : 'Your Google sign-in is no longer valid. Please sign in again to save designs to the cloud.',
+        'Phiên đăng nhập Google không hợp lệ. Vui lòng đăng nhập lại để lưu thiết kế lên cloud.',
       );
       return;
     }
@@ -231,7 +229,7 @@ export function WeddingCardDesigner({
     setCloudError(null);
     setCloudMessage(null);
 
-    const title = buildDesignTitle(cardData, savedDesigns.length + 1, language);
+    const title = buildDesignTitle(cardData, savedDesigns.length + 1);
 
     try {
       const design = selectedDesignId
@@ -247,20 +245,13 @@ export function WeddingCardDesigner({
           });
 
       setSelectedDesignId(design.id);
-      setCloudMessage(
-        language === 'vi'
-          ? 'Da luu thiet ke len cloud thanh cong.'
-          : 'Design saved to the cloud successfully.',
-      );
+      setCloudMessage('Đã lưu thiết kế lên cloud thành công.');
       await loadSavedDesigns();
     } catch (error) {
       const message = error instanceof Error ? error.message : null;
 
       setCloudError(
-        message ??
-          (language === 'vi'
-            ? 'Khong the luu thiet ke. Hay kiem tra API cloud.'
-            : 'Could not save design. Check the cloud API configuration.'),
+        message ?? 'Không thể lưu thiết kế. Hãy kiểm tra API cloud.',
       );
     } finally {
       setIsSaving(false);
@@ -270,7 +261,7 @@ export function WeddingCardDesigner({
   const handleLoadDesign = (design: WeddingCardDesign) => {
     setCardData(normalizeCardData(design.cardData));
     setSelectedDesignId(design.id);
-    setCloudMessage(language === 'vi' ? 'Da nap thiet ke da luu.' : 'Saved design loaded.');
+    setCloudMessage('Đã nạp thiết kế đã lưu.');
     setCloudError(null);
   };
 
@@ -292,17 +283,12 @@ export function WeddingCardDesigner({
       }
 
       setCloudMessage(
-        language === 'vi'
-          ? 'Da xoa thiet ke khoi cloud.'
-          : 'Design deleted from the cloud.',
+        'Đã xóa thiết kế khỏi cloud.',
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : null;
 
-      setCloudError(
-        message ??
-          (language === 'vi' ? 'Khong the xoa thiet ke.' : 'Could not delete the design.'),
-      );
+      setCloudError(message ?? 'Không thể xóa thiết kế.');
     } finally {
       setIsDeletingId(null);
     }
@@ -334,12 +320,7 @@ export function WeddingCardDesigner({
     } catch (error) {
       const message = error instanceof Error ? error.message : null;
 
-      setCloudError(
-        message ??
-          (language === 'vi'
-            ? 'Khong the tai danh sach thiet ke da luu.'
-            : 'Could not load saved designs.'),
-      );
+      setCloudError(message ?? 'Không thể tải danh sách thiết kế đã lưu.');
     } finally {
       setIsLoadingDesigns(false);
     }
@@ -361,22 +342,20 @@ export function WeddingCardDesigner({
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+              className="inline-flex items-center gap-2 rounded-none border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
             >
               <ArrowLeft size={16} />
-              <span>{language === 'vi' ? 'Quay lai' : 'Back'}</span>
+              <span>Quay lại</span>
             </button>
 
             <div className="flex items-center gap-3">
               <Sparkles size={22} style={{ color: '#8B0000' }} />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  {language === 'vi' ? 'Thiet ke thiep cuoi' : 'Wedding Invitation Designer'}
+                  Thiết kế thiệp cưới
                 </h1>
                 <p className="text-xs text-gray-500">
-                  {language === 'vi'
-                    ? 'Song ngu Viet - Anh, nhieu bang mau, phong cach va item trang tri.'
-                    : 'Bilingual Vietnamese - English designer with expanded palettes, styles, and embellishments.'}
+                  Trang thiết kế hiển thị hoàn toàn bằng tiếng Việt, có nhiều bảng màu, phong cách và item trang trí.
                 </p>
               </div>
             </div>
@@ -385,156 +364,142 @@ export function WeddingCardDesigner({
           <div className="flex items-center gap-3">
             <button
               onClick={handleStartNew}
-              className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+              className="rounded-none border border-gray-200 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
             >
-              {language === 'vi' ? 'Mau moi' : 'New Draft'}
+              Mẫu mới
             </button>
             <button
               onClick={handleConsult}
-              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-white transition-all hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-none px-4 py-2 text-sm text-white transition-all hover:shadow-lg"
               style={{ backgroundColor: '#8B0000' }}
             >
               <HeartHandshake size={16} />
-              <span>{language === 'vi' ? 'Tu van dat ngay' : 'Consult & Order'}</span>
+              <span>Tư vấn đặt ngay</span>
             </button>
           </div>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8 grid gap-4 rounded-2xl border border-amber-100 bg-white p-5 shadow-sm lg:grid-cols-[1.25fr_1fr_auto]">
+        <div className="mb-8 grid gap-4 rounded-none border border-amber-100 bg-white p-5 shadow-sm lg:grid-cols-[1.25fr_1fr_auto]">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Cloud Save</h2>
             <p className="mt-1 text-sm text-gray-500">
-              {language === 'vi'
-                ? 'Luu bo thuoc tinh thiep, ngon ngu, mau sac va item trang tri theo tai khoan Google.'
-                : 'Save the invitation settings, bilingual content, colors, and embellishments under your Google account.'}
+              Lưu toàn bộ thuộc tính thiệp, màu sắc, phong cách và item trang trí theo tài khoản Google.
             </p>
             {cloudMessage ? <p className="mt-2 text-sm text-green-700">{cloudMessage}</p> : null}
             {cloudError ? <p className="mt-2 text-sm text-red-600">{cloudError}</p> : null}
             {!canUseCloudSave ? (
               <button
                 onClick={() => onOpenLogin('designer')}
-                className="mt-3 rounded-lg border border-amber-300 px-3 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50"
+                className="mt-3 rounded-none border border-amber-300 px-3 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50"
               >
-                {language === 'vi' ? 'Dang nhap lai de luu cloud' : 'Sign in again for cloud save'}
+                Đăng nhập lại để lưu cloud
               </button>
             ) : null}
           </div>
 
-          <div className="rounded-xl p-4 text-sm text-gray-600" style={{ backgroundColor: selectedColor.surface }}>
+          <div className="rounded-none p-4 text-sm text-gray-600" style={{ backgroundColor: selectedColor.surface }}>
             <p className="font-medium text-gray-900">
               {selectedDesignId
-                ? language === 'vi'
-                  ? 'Dang sua ban da luu'
-                  : 'Editing saved design'
-                : language === 'vi'
-                  ? 'Ban nhap moi'
-                  : 'New draft'}
+                ? 'Đang sửa bản đã lưu'
+                : 'Bản nháp mới'}
             </p>
-            <p className="mt-1">{language === 'vi' ? selectedStyle.name : selectedStyle.nameEn}</p>
-            <p className="mt-1">{language === 'vi' ? selectedFormat.name : selectedFormat.nameEn}</p>
+            <p className="mt-1">{selectedStyle.name}</p>
+            <p className="mt-1">{selectedFormat.name}</p>
             <p className="mt-1 break-all">
-              {user?.email ?? (language === 'vi' ? 'Chua dang nhap Google' : 'Google sign-in not available')}
+              {user?.email ?? 'Chưa đăng nhập Google'}
             </p>
           </div>
 
           <button
             onClick={handleSaveDesign}
             disabled={!canUseCloudSave || isSaving}
-            className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-none px-4 py-3 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
             style={{ backgroundColor: '#8B0000' }}
           >
             {isSaving ? <LoaderCircle className="animate-spin" size={16} /> : <Save size={16} />}
             <span>
               {selectedDesignId
-                ? language === 'vi'
-                  ? 'Cap nhat cloud'
-                  : 'Update Cloud Save'
-                : language === 'vi'
-                  ? 'Luu len cloud'
-                  : 'Save to Cloud'}
+                ? 'Cập nhật cloud'
+                : 'Lưu lên cloud'}
             </span>
           </button>
         </div>
 
         <div className="grid gap-8 xl:grid-cols-[1.3fr_1fr_0.9fr]">
-          <div className="space-y-6 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="space-y-6 rounded-none bg-white p-6 shadow-sm">
             <SectionTitle
-              title={language === 'vi' ? 'Thong tin co ban' : 'Core invitation details'}
-              subtitle={language === 'vi'
-                ? 'Nhap noi dung song ngu va thong tin chinh cho thiep.'
-                : 'Enter bilingual content and the main invitation details.'}
+              title="Thông tin cơ bản"
+              subtitle="Nhập các thông tin chính để hiển thị lên mặt thiệp."
             />
 
             <div className="grid gap-4 md:grid-cols-2">
               <Field
-                label={language === 'vi' ? 'Ten chu re' : 'Groom name'}
+                label="Tên chú rể"
                 value={cardData.groomName}
-                placeholder={language === 'vi' ? 'Nguyen Van A' : 'Henry Nguyen'}
+                placeholder="Nguyễn Văn A"
                 onChange={(value) => handleChange('groomName', value)}
               />
               <Field
-                label={language === 'vi' ? 'Ten co dau' : 'Bride name'}
+                label="Tên cô dâu"
                 value={cardData.brideName}
-                placeholder={language === 'vi' ? 'Tran Thi B' : 'Linh Tran'}
+                placeholder="Trần Thị B"
                 onChange={(value) => handleChange('brideName', value)}
               />
               <Field
-                label={language === 'vi' ? 'Cha me nha trai' : "Groom's parents"}
+                label="Cha mẹ nhà trai"
                 value={cardData.groomParents}
-                placeholder={language === 'vi' ? 'Ong ba Nguyen Van C' : 'Mr. and Mrs. Henry Nguyen'}
+                placeholder="Ông bà Nguyễn Văn C"
                 onChange={(value) => handleChange('groomParents', value)}
               />
               <Field
-                label={language === 'vi' ? 'Cha me nha gai' : "Bride's parents"}
+                label="Cha mẹ nhà gái"
                 value={cardData.brideParents}
-                placeholder={language === 'vi' ? 'Ong ba Tran Van D' : 'Mr. and Mrs. Linh Tran'}
+                placeholder="Ông bà Trần Văn D"
                 onChange={(value) => handleChange('brideParents', value)}
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <SelectGrid
-                label={language === 'vi' ? 'Loai thiep' : 'Invitation type'}
+                label="Loại thiệp"
                 items={eventTypes}
                 selectedId={cardData.eventType}
-                language={language}
                 onSelect={(value) => handleChange('eventType', value)}
               />
               <SelectGrid
-                label={language === 'vi' ? 'Ngon ngu hien thi' : 'Content language'}
+                label="Ngôn ngữ hiển thị"
                 items={contentLanguages}
                 selectedId={cardData.contentLanguage}
-                language={language}
                 onSelect={(value) => handleChange('contentLanguage', value)}
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <Field
-                label={language === 'vi' ? 'Dia diem to chuc' : 'Venue'}
+                label="Địa điểm tổ chức"
                 value={cardData.venue}
-                placeholder={language === 'vi' ? 'Trung tam hoi nghi Riverside' : 'Riverside Convention Center'}
+                placeholder="Trung tâm hội nghị Riverside"
                 onChange={(value) => handleChange('venue', value)}
               />
               <Field
-                label={language === 'vi' ? 'Dress code' : 'Dress code'}
+                label="Dress code"
                 value={cardData.dressCode}
-                placeholder={language === 'vi' ? 'Formal / Pastel tones' : 'Formal / Pastel tones'}
+                placeholder="Formal / Pastel tones"
                 onChange={(value) => handleChange('dressCode', value)}
               />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <Field
-                label={language === 'vi' ? 'Ngay to chuc' : 'Date'}
+                label="Ngày tổ chức"
                 value={cardData.date}
                 type="date"
                 onChange={(value) => handleChange('date', value)}
               />
               <Field
-                label={language === 'vi' ? 'Thoi gian' : 'Time'}
+                label="Thời gian"
                 value={cardData.time}
                 type="time"
                 onChange={(value) => handleChange('time', value)}
@@ -542,29 +507,25 @@ export function WeddingCardDesigner({
             </div>
 
             <Field
-              label={language === 'vi' ? 'Lien he RSVP' : 'RSVP contact'}
+              label="Liên hệ RSVP"
               value={cardData.rsvpContact}
-              placeholder={language === 'vi' ? '0909 123 456 - Anna' : '+84 909 123 456 - Anna'}
+              placeholder="0909 123 456 - Anna"
               onChange={(value) => handleChange('rsvpContact', value)}
             />
 
             <SectionTitle
-              title={language === 'vi' ? 'Mau sac, phong cach va item' : 'Palettes, style, and decorative items'}
-              subtitle={language === 'vi'
-                ? 'Chon bang mau, kieu nen, format va cac item tang gia tri cho thiep.'
-                : 'Choose your palette, background, format, and premium invitation items.'}
+              title="Màu sắc, phong cách và item"
+              subtitle="Chọn bảng màu, kiểu nền và các chi tiết trang trí cho thiệp."
             />
 
             <div>
-              <label className="mb-2 block text-sm text-gray-500">
-                {language === 'vi' ? 'Bang mau' : 'Color palette'}
-              </label>
+              <label className="mb-2 block text-sm text-gray-500">Bảng màu</label>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                 {colorSchemes.map((color) => (
                   <button
                     key={color.id}
                     onClick={() => handleChange('colorScheme', color.id)}
-                    className={`rounded-xl border-2 p-3 text-left transition-all ${
+                    className={`rounded-none border-2 p-3 text-left transition-all ${
                       cardData.colorScheme === color.id
                         ? 'border-amber-400 shadow-md'
                         : 'border-gray-200 hover:border-amber-200'
@@ -576,7 +537,7 @@ export function WeddingCardDesigner({
                       <span className="h-7 w-7 rounded-full border border-gray-200" style={{ backgroundColor: color.surface }} />
                     </div>
                     <div className="text-sm font-medium text-gray-900">
-                      {language === 'vi' ? color.name : color.nameEn}
+                      {color.name}
                     </div>
                   </button>
                 ))}
@@ -585,25 +546,21 @@ export function WeddingCardDesigner({
 
             <div className="grid gap-4 md:grid-cols-2">
               <SelectGrid
-                label={language === 'vi' ? 'Phong cach' : 'Style preset'}
+                label="Phong cách"
                 items={stylePresets}
                 selectedId={cardData.stylePreset}
-                language={language}
                 onSelect={(value) => handleChange('stylePreset', value)}
               />
               <SelectGrid
-                label={language === 'vi' ? 'Kieu nen' : 'Background'}
+                label="Kiểu nền"
                 items={backgrounds}
                 selectedId={cardData.background}
-                language={language}
                 onSelect={(value) => handleChange('background', value)}
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm text-gray-500">
-                {language === 'vi' ? 'Items / embellishments' : 'Items / embellishments'}
-              </label>
+              <label className="mb-2 block text-sm text-gray-500">Items / embellishments</label>
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {embellishmentOptions.map((item) => {
                   const isSelected = cardData.embellishments.includes(item.id);
@@ -612,14 +569,14 @@ export function WeddingCardDesigner({
                     <button
                       key={item.id}
                       onClick={() => toggleEmbellishment(item.id)}
-                      className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${
+                      className={`flex items-center justify-between rounded-none border px-4 py-3 text-left transition-all ${
                         isSelected
                           ? 'border-amber-400 bg-amber-50 shadow-sm'
                           : 'border-gray-200 hover:border-amber-200'
                       }`}
                     >
                       <span className="text-sm text-gray-800">
-                        {language === 'vi' ? item.name : item.nameEn}
+                        {item.name}
                       </span>
                       {isSelected ? <Check size={16} className="text-amber-700" /> : null}
                     </button>
@@ -632,17 +589,17 @@ export function WeddingCardDesigner({
           <div className="space-y-4 md:sticky md:top-28 md:self-start">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
-                {language === 'vi' ? 'Xem truoc thiep' : 'Invitation preview'}
+                Xem trước thiệp
               </h2>
-              <span className="rounded-full px-3 py-1 text-xs text-gray-700" style={{ backgroundColor: selectedColor.surface }}>
-                {language === 'vi' ? 'Ty le 5x7' : '5x7 ratio'}
+              <span className="rounded-none px-3 py-1 text-xs text-gray-700" style={{ backgroundColor: selectedColor.surface }}>
+                Tỷ lệ 5x7
               </span>
             </div>
 
-            <div className="aspect-[5/7] overflow-hidden rounded-[2rem] shadow-2xl" style={getBackgroundStyle(selectedColor, selectedBg)}>
+            <div className="aspect-[5/7] overflow-hidden rounded-none shadow-2xl" style={getBackgroundStyle(selectedColor, selectedBg)}>
               <div className="relative h-full w-full p-4 sm:p-5">
                 {cardData.embellishments.includes('photo-panel') ? (
-                  <div className="absolute right-4 top-4 h-16 w-12 rounded-xl border border-white/40 bg-white/20 backdrop-blur-sm" />
+                  <div className="absolute right-4 top-4 h-16 w-12 rounded-none border border-white/40 bg-white/20 backdrop-blur-sm" />
                 ) : null}
                 {cardData.embellishments.includes('wax-seal') ? (
                   <div className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/15 text-[10px] font-semibold backdrop-blur-sm" style={{ color: previewTone }}>
@@ -653,7 +610,7 @@ export function WeddingCardDesigner({
                 <div
                   className={`flex h-full min-h-0 flex-col ${
                     cardData.stylePreset === 'editorial' ? 'justify-between' : 'justify-center'
-                  } rounded-[1.6rem] border px-4 py-5 text-center backdrop-blur-[1px]`}
+                  } rounded-none border px-4 py-5 text-center backdrop-blur-[1px]`}
                   style={{
                     color: previewTone,
                     borderColor:
@@ -666,23 +623,23 @@ export function WeddingCardDesigner({
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <div
-                          className="mx-auto inline-flex max-w-full rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
+                          className="mx-auto inline-flex max-w-full rounded-none px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
                           style={{
                             backgroundColor:
                               previewTone === '#FFFFFF' ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.7)',
                           }}
                         >
-                          {language === 'vi' ? selectedEvent.name : selectedEvent.nameEn}
+                          {selectedEvent.name}
                         </div>
 
-                        {renderInvitationHeading(cardData.contentLanguage, language)}
+                        {renderInvitationHeading(cardData.contentLanguage)}
                       </div>
 
                       <div className="space-y-3">
                         <div className={`${getNameTypography(cardData.stylePreset)} break-words leading-tight`}>
-                          <div>{cardData.groomName || (language === 'vi' ? 'Chu re' : 'Groom')}</div>
+                          <div>{cardData.groomName || 'Chú rể'}</div>
                           <div className="my-2 text-lg opacity-80">&</div>
-                          <div>{cardData.brideName || (language === 'vi' ? 'Co dau' : 'Bride')}</div>
+                          <div>{cardData.brideName || 'Cô dâu'}</div>
                         </div>
 
                         <div className="mx-auto h-px w-16" style={{ backgroundColor: previewTone === '#FFFFFF' ? 'rgba(255,255,255,0.35)' : 'rgba(31,41,55,0.2)' }} />
@@ -691,23 +648,23 @@ export function WeddingCardDesigner({
 
                     <div className="space-y-3">
                       <div
-                        className="mx-auto grid w-full max-w-[280px] gap-2 rounded-[1.25rem] px-3 py-3 text-xs sm:text-sm"
+                        className="mx-auto grid w-full max-w-[280px] gap-2 rounded-none px-3 py-3 text-xs sm:text-sm"
                         style={{
                           backgroundColor:
                             previewTone === '#FFFFFF' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.62)',
                         }}
                       >
                         <InfoLine
-                          label={language === 'vi' ? 'Ngay' : 'Date'}
-                          value={cardData.date || (language === 'vi' ? 'Chon ngay to chuc' : 'Select event date')}
+                          label="Ngày"
+                          value={cardData.date || 'Chọn ngày tổ chức'}
                         />
                         <InfoLine
-                          label={language === 'vi' ? 'Gio' : 'Time'}
-                          value={cardData.time || (language === 'vi' ? 'Chon gio' : 'Select time')}
+                          label="Giờ"
+                          value={cardData.time || 'Chọn giờ'}
                         />
                         <InfoLine
-                          label={language === 'vi' ? 'Dia diem' : 'Venue'}
-                          value={cardData.venue || (language === 'vi' ? 'Nhap dia diem' : 'Enter venue')}
+                          label="Địa điểm"
+                          value={cardData.venue || 'Nhập địa điểm'}
                         />
                         {cardData.dressCode ? (
                           <InfoLine
@@ -735,13 +692,13 @@ export function WeddingCardDesigner({
                             return (
                               <span
                                 key={itemId}
-                                className="max-w-full rounded-full px-2.5 py-1 text-[10px] break-words text-center"
+                                className="max-w-full rounded-none px-2.5 py-1 text-[10px] break-words text-center"
                                 style={{
                                   backgroundColor:
                                     previewTone === '#FFFFFF' ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.65)',
                                 }}
                               >
-                                {language === 'vi' ? match.name : match.nameEn}
+                              {match.name}
                               </span>
                             );
                           })}
@@ -753,42 +710,36 @@ export function WeddingCardDesigner({
               </div>
             </div>
 
-            <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <div className="rounded-none bg-white p-5 shadow-sm">
               <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
-                {language === 'vi' ? 'Style note' : 'Style note'}
+                Ghi chú phong cách
               </h3>
               <p className="mt-3 text-sm text-gray-700">{selectedStyle.accent}</p>
             </div>
           </div>
 
-          <aside className="rounded-2xl bg-white p-6 shadow-sm xl:self-start">
+          <aside className="rounded-none bg-white p-6 shadow-sm xl:self-start">
             <div className="mb-4">
               <h2 className="text-lg font-semibold text-gray-900">
-                {language === 'vi' ? 'Mau da luu' : 'Saved designs'}
+                Mẫu đã lưu
               </h2>
               <p className="text-sm text-gray-500">
-                {language === 'vi'
-                  ? 'Moi ban luu giu nguyen mau sac, ngon ngu, style va item.'
-                  : 'Each saved draft keeps its palette, language, style, and selected items.'}
+                Mỗi bản lưu giữ nguyên màu sắc, ngôn ngữ, phong cách và item.
               </p>
             </div>
 
             {!canUseCloudSave ? (
-              <p className="rounded-xl bg-[#faf7f2] p-4 text-sm text-gray-600">
-                {language === 'vi'
-                  ? 'Dang nhap bang Google de mo tinh nang luu va tai thiet ke tren cloud.'
-                  : 'Sign in with Google to enable cloud save and restore.'}
+              <p className="rounded-none bg-[#faf7f2] p-4 text-sm text-gray-600">
+                Đăng nhập bằng Google để mở tính năng lưu và tải thiết kế trên cloud.
               </p>
             ) : isLoadingDesigns ? (
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <LoaderCircle className="animate-spin" size={16} />
-                <span>{language === 'vi' ? 'Dang tai du lieu...' : 'Loading designs...'}</span>
+                <span>Đang tải dữ liệu...</span>
               </div>
             ) : savedDesigns.length === 0 ? (
-              <p className="rounded-xl bg-[#faf7f2] p-4 text-sm text-gray-600">
-                {language === 'vi'
-                  ? 'Chua co thiet ke nao duoc luu. Hay luu ban nhap dau tien len cloud.'
-                  : 'No saved designs yet. Save your first draft to the cloud.'}
+              <p className="rounded-none bg-[#faf7f2] p-4 text-sm text-gray-600">
+                Chưa có thiết kế nào được lưu. Hãy lưu bản nháp đầu tiên lên cloud.
               </p>
             ) : (
               <div className="space-y-3">
@@ -800,7 +751,7 @@ export function WeddingCardDesigner({
                   return (
                     <div
                       key={design.id}
-                      className={`rounded-xl border p-4 transition-colors ${
+                      className={`rounded-none border p-4 transition-colors ${
                         selectedDesignId === design.id
                           ? 'border-amber-300 bg-amber-50/50'
                           : 'border-gray-200'
@@ -813,12 +764,12 @@ export function WeddingCardDesigner({
                             {new Date(design.updatedAt).toLocaleString()}
                           </p>
                         </div>
-                        <button
-                          onClick={() => void handleDeleteDesign(design)}
-                          disabled={isDeletingId === design.id}
-                          className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 disabled:opacity-50"
-                          aria-label={language === 'vi' ? 'Xoa thiet ke' : 'Delete design'}
-                        >
+                      <button
+                        onClick={() => void handleDeleteDesign(design)}
+                        disabled={isDeletingId === design.id}
+                        className="rounded-none p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 disabled:opacity-50"
+                        aria-label="Xóa thiết kế"
+                      >
                           {isDeletingId === design.id ? (
                             <LoaderCircle className="animate-spin" size={15} />
                           ) : (
@@ -830,21 +781,21 @@ export function WeddingCardDesigner({
                       <div className="mt-3 flex items-center gap-2">
                         <span className="h-4 w-4 rounded-full" style={{ backgroundColor: savedColor.primary }} />
                         <span className="text-xs text-gray-500">
-                          {language === 'vi' ? savedStyle.name : savedStyle.nameEn}
+                          {savedStyle.name}
                         </span>
                       </div>
 
                       <p className="mt-3 text-sm text-gray-600">
-                        {(normalized.groomName || (language === 'vi' ? 'Chu re' : 'Groom'))}
+                        {(normalized.groomName || 'Chú rể')}
                         {' & '}
-                        {(normalized.brideName || (language === 'vi' ? 'Co dau' : 'Bride'))}
+                        {(normalized.brideName || 'Cô dâu')}
                       </p>
 
                       <button
                         onClick={() => handleLoadDesign(design)}
-                        className="mt-3 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                        className="mt-3 w-full rounded-none border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                       >
-                        {language === 'vi' ? 'Tai vao trinh sua' : 'Load into editor'}
+                        Tải vào trình sửa
                       </button>
                     </div>
                   );
@@ -888,7 +839,7 @@ function Field({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-gray-200 px-4 py-2.5 transition-colors focus:border-amber-400 focus:outline-none"
+        className="w-full rounded-none border border-gray-200 px-4 py-2.5 transition-colors focus:border-amber-400 focus:outline-none"
       />
     </div>
   );
@@ -897,13 +848,11 @@ function Field({
 function SelectGrid({
   items,
   label,
-  language,
   onSelect,
   selectedId,
 }: {
   items: Array<{ id: string; name: string; nameEn: string }>;
   label: string;
-  language: 'vi' | 'en';
   onSelect: (value: string) => void;
   selectedId: string;
 }) {
@@ -918,13 +867,13 @@ function SelectGrid({
             <button
               key={item.id}
               onClick={() => onSelect(item.id)}
-              className={`rounded-lg border px-3 py-2.5 text-left text-sm transition-all ${
+              className={`rounded-none border px-3 py-2.5 text-left text-sm transition-all ${
                 isSelected
                   ? 'border-amber-400 bg-amber-50 shadow-sm'
                   : 'border-gray-200 hover:border-amber-200'
               }`}
             >
-              {language === 'vi' ? item.name : item.nameEn}
+              {item.name}
             </button>
           );
         })}
@@ -994,9 +943,9 @@ function getBackgroundStyle(
   }
 }
 
-function renderInvitationHeading(contentLanguage: string, language: 'vi' | 'en') {
+function renderInvitationHeading(contentLanguage: string) {
   if (contentLanguage === 'vi') {
-    return <div className="text-xs uppercase tracking-[0.3em] opacity-90">TRAN TRONG KINH MOI</div>;
+    return <div className="text-xs uppercase tracking-[0.3em] opacity-90">TRÂN TRỌNG KÍNH MỜI</div>;
   }
 
   if (contentLanguage === 'en') {
@@ -1005,10 +954,8 @@ function renderInvitationHeading(contentLanguage: string, language: 'vi' | 'en')
 
   return (
     <div className="space-y-1">
-      <div className="text-xs uppercase tracking-[0.3em] opacity-90">TRAN TRONG KINH MOI</div>
-      <div className="text-[11px] uppercase tracking-[0.28em] opacity-75">
-        {language === 'vi' ? 'MOT THIEP SONG NGU' : 'A BILINGUAL INVITATION'}
-      </div>
+      <div className="text-xs uppercase tracking-[0.3em] opacity-90">TRÂN TRỌNG KÍNH MỜI</div>
+      <div className="text-[11px] uppercase tracking-[0.28em] opacity-75">MỘT THIỆP SONG NGỮ</div>
       <div className="text-xs uppercase tracking-[0.3em] opacity-90">CORDIALLY INVITE YOU</div>
     </div>
   );
@@ -1046,29 +993,23 @@ function normalizeCardData(cardData?: Partial<CardData> | null): CardData {
   };
 }
 
-function buildDesignTitle(cardData: CardData, sequence: number, language: string) {
+function buildDesignTitle(cardData: CardData, sequence: number) {
   const groom = cardData.groomName.trim();
   const bride = cardData.brideName.trim();
   const eventLabel =
     cardData.eventType === 'engagement'
-      ? language === 'vi'
-        ? 'Dinh hon'
-        : 'Engagement'
+      ? 'Đính hôn'
       : cardData.eventType === 'reception'
-        ? language === 'vi'
-          ? 'Tiec cuoi'
-          : 'Reception'
+        ? 'Tiệc cưới'
         : cardData.eventType === 'save-the-date'
           ? 'Save the Date'
-          : language === 'vi'
-            ? 'Thanh hon'
-            : 'Wedding';
+          : 'Thành hôn';
 
   if (groom || bride) {
-    return `${eventLabel} - ${groom || (language === 'vi' ? 'Chu re' : 'Groom')} & ${
-      bride || (language === 'vi' ? 'Co dau' : 'Bride')
+    return `${eventLabel} - ${groom || 'Chú rể'} & ${
+      bride || 'Cô dâu'
     }`;
   }
 
-  return language === 'vi' ? `Ban nhap thiep #${sequence}` : `Wedding Card Draft #${sequence}`;
+  return `Bản nháp thiệp #${sequence}`;
 }

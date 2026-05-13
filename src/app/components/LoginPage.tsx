@@ -133,7 +133,7 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
         <div className="flex items-center">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-none border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
           >
             <ArrowLeft size={16} />
             <span>{language === 'vi' ? 'Quay lai' : 'Back'}</span>
@@ -141,7 +141,7 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
         </div>
 
         <div className="flex flex-1 items-center justify-center py-10">
-          <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+          <div className="w-full max-w-md rounded-none bg-white p-8 shadow-2xl">
             <div className="mb-8 text-center">
               <div className="mb-4" style={{ fontSize: '1.5rem', color: '#B8860B' }}>
                 Tien Dat
@@ -177,7 +177,7 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
 
               <button
                 onClick={handleGuestLogin}
-                className="w-full rounded-lg px-4 py-3 text-white transition-all"
+                className="w-full rounded-none px-4 py-3 text-white transition-all"
                 style={{ backgroundColor: '#8B0000' }}
               >
                 {language === 'vi' ? 'Tiep tuc voi tu cach khach' : 'Continue as guest'}

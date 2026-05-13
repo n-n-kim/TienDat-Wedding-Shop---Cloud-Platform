@@ -202,13 +202,13 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
         <div className="mb-6 flex items-center justify-between gap-4">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-none border border-gray-200 bg-white px-5 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
           >
             <ArrowLeft size={16} />
             <span>{language === 'vi' ? 'Quay lại' : 'Back'}</span>
           </button>
 
-          <div className="rounded-full bg-white px-5 py-2.5 text-sm text-gray-600 shadow-sm">
+          <div className="rounded-none bg-white px-5 py-2.5 text-sm text-gray-600 shadow-sm">
             {language === 'vi' ? 'Admin đang đăng nhập:' : 'Logged in admin:'} {user?.email}
           </div>
         </div>
@@ -225,12 +225,12 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
         </div>
 
         {error ? (
-          <div className="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mb-4 rounded-none border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
           </div>
         ) : null}
 
-        <div className="overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+        <div className="overflow-hidden rounded-none border border-gray-100 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
           <div className="grid min-h-[720px] lg:grid-cols-[360px,1fr]">
             <aside className="border-r border-gray-100 bg-slate-50/80">
               <div className="border-b border-gray-100 px-5 py-5">
@@ -245,7 +245,7 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
                     </div>
                   </div>
                 </div>
-                <div className="rounded-full bg-white px-4 py-2 text-sm text-gray-500 shadow-sm">
+                <div className="rounded-none bg-white px-4 py-2 text-sm text-gray-500 shadow-sm">
                   {conversations.length}{' '}
                   {language === 'vi' ? 'hội thoại từ user' : 'user conversations'}
                 </div>
@@ -253,13 +253,13 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
 
               <div className="space-y-2 p-3">
                 {loading ? (
-                  <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
+                  <div className="rounded-none border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
                     {language === 'vi' ? 'Đang tải hội thoại...' : 'Loading conversations...'}
                   </div>
                 ) : null}
 
                 {!loading && conversations.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
+                  <div className="rounded-none border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
                     {language === 'vi'
                       ? 'Chưa có user nào nhắn tin.'
                       : 'No users have sent messages yet.'}
@@ -270,7 +270,7 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
                   <button
                     key={conversation.id}
                     onClick={() => setSelectedConversationId(conversation.id)}
-                    className={`w-full rounded-[1.5rem] px-4 py-4 text-left transition-all ${
+                    className={`w-full rounded-none px-4 py-4 text-left transition-all ${
                       conversation.id === selectedConversation?.id
                         ? 'bg-white shadow-md ring-1 ring-amber-200'
                         : 'hover:bg-white hover:shadow-sm'
@@ -356,7 +356,7 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
 
                     <div className="flex items-center gap-3">
                       <span
-                        className={`rounded-full px-3 py-1 text-sm ${
+                        className={`rounded-none px-3 py-1 text-sm ${
                           selectedConversation.status === 'open'
                             ? 'bg-emerald-50 text-emerald-700'
                             : 'bg-gray-100 text-gray-600'
@@ -367,7 +367,7 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
                       <button
                         onClick={handleToggleStatus}
                         disabled={statusUpdating}
-                        className="rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="rounded-none border border-gray-200 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {statusUpdating
                           ? language === 'vi'
@@ -411,10 +411,10 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
                                   : selectedConversation.userName}
                               </div>
                               <div
-                                className={`rounded-[1.5rem] px-4 py-3 text-sm leading-6 shadow-sm ${
+                                className={`rounded-none px-4 py-3 text-sm leading-6 shadow-sm ${
                                   isAdminMessage
-                                    ? 'rounded-br-md bg-[#0084ff] text-white'
-                                    : 'rounded-bl-md border border-gray-100 bg-white text-gray-800'
+                                    ? 'bg-[#0084ff] text-white'
+                                    : 'border border-gray-100 bg-white text-gray-800'
                                 }`}
                               >
                                 <div className="whitespace-pre-wrap">{message.content}</div>
@@ -437,7 +437,7 @@ export function AdminChatPage({ onBack, onOpenLogin }: AdminChatPageProps) {
 
                   <div className="border-t border-gray-100 bg-white px-4 py-4 sm:px-6">
                     <form onSubmit={handleSendReply} className="space-y-3">
-                      <div className="flex items-end gap-3 rounded-[1.75rem] border border-gray-200 bg-slate-50 px-3 py-3 shadow-inner">
+                      <div className="flex items-end gap-3 rounded-none border border-gray-200 bg-slate-50 px-3 py-3 shadow-inner">
                         <textarea
                           rows={1}
                           value={replyDraft}
@@ -504,21 +504,21 @@ function GuardState({
         <div className="mb-6 flex items-center">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-none border border-gray-200 bg-white px-5 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
           >
             <ArrowLeft size={16} />
             <span>{language === 'vi' ? 'Quay lại' : 'Back'}</span>
           </button>
         </div>
 
-        <div className="rounded-[2rem] border border-gray-100 bg-white p-10 text-center shadow-xl">
+        <div className="rounded-none border border-gray-100 bg-white p-10 text-center shadow-xl">
           <h1 className="mb-4 text-3xl font-semibold text-gray-900">{title}</h1>
           <p className="mx-auto mb-8 max-w-xl text-gray-500">{description}</p>
           <div className="flex flex-wrap justify-center gap-3">
             {onPrimaryAction && primaryActionLabel ? (
               <button
                 onClick={onPrimaryAction}
-                className="rounded-full px-5 py-3 text-white transition-all hover:shadow-lg"
+                className="rounded-none px-5 py-3 text-white transition-all hover:shadow-lg"
                 style={{ backgroundColor: '#8B0000' }}
               >
                 {primaryActionLabel}
@@ -526,7 +526,7 @@ function GuardState({
             ) : null}
             <button
               onClick={onBack}
-              className="rounded-full border border-gray-200 px-5 py-3 text-gray-700 transition-colors hover:bg-gray-50"
+              className="rounded-none border border-gray-200 px-5 py-3 text-gray-700 transition-colors hover:bg-gray-50"
             >
               {language === 'vi' ? 'Quay lại trang chủ' : 'Back to home'}
             </button>

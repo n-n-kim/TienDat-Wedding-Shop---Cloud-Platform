@@ -60,7 +60,7 @@ export function SamplesPage({ onBack, onOpenContact }: SamplesPageProps) {
         <div className="mb-8 flex items-center justify-between gap-4">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-none border border-gray-200 bg-white px-5 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
           >
             <ArrowLeft size={16} />
             <span>{language === 'vi' ? 'Quay lại' : 'Back'}</span>
@@ -68,7 +68,7 @@ export function SamplesPage({ onBack, onOpenContact }: SamplesPageProps) {
 
           <button
             onClick={onOpenContact}
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm text-white transition-all hover:shadow-lg"
+            className="inline-flex items-center gap-2 rounded-none px-5 py-2.5 text-sm text-white transition-all hover:shadow-lg"
             style={{ backgroundColor: '#8B0000' }}
           >
             <MessageCircle size={16} />
@@ -76,10 +76,10 @@ export function SamplesPage({ onBack, onOpenContact }: SamplesPageProps) {
           </button>
         </div>
 
-        <section className="mb-10 rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-[0_24px_80px_rgba(139,0,0,0.08)] backdrop-blur sm:p-10">
+        <section className="mb-10 rounded-none border border-white/70 bg-white/80 p-8 shadow-[0_24px_80px_rgba(139,0,0,0.08)] backdrop-blur sm:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.1fr,0.9fr] lg:items-center">
             <div>
-              <div className="mb-4 inline-flex rounded-full bg-red-50 px-4 py-1.5 text-sm text-red-700">
+              <div className="mb-4 inline-flex rounded-none bg-red-50 px-4 py-1.5 text-sm text-red-700">
                 {language === 'vi' ? 'Bộ sưu tập thiệp mẫu' : 'Sample invitation collection'}
               </div>
               <h1 className="mb-4 text-4xl font-semibold text-gray-900 sm:text-5xl">
@@ -98,7 +98,7 @@ export function SamplesPage({ onBack, onOpenContact }: SamplesPageProps) {
               {SAMPLE_PRODUCTS.slice(0, 4).map((item, index) => (
                 <div
                   key={index}
-                  className={`overflow-hidden rounded-[1.75rem] border border-white bg-white shadow-lg ${
+                  className={`overflow-hidden rounded-none border border-white bg-white shadow-lg ${
                     index % 2 === 0 ? 'translate-y-0' : 'translate-y-6'
                   }`}
                 >
@@ -117,7 +117,7 @@ export function SamplesPage({ onBack, onOpenContact }: SamplesPageProps) {
           {SAMPLE_PRODUCTS.map((item, index) => (
             <article
               key={index}
-              className="group overflow-hidden rounded-[1.75rem] border border-amber-100 bg-white shadow-[0_20px_40px_rgba(15,23,42,0.06)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(139,0,0,0.12)]"
+              className="group overflow-hidden rounded-none border border-amber-100 bg-white shadow-[0_20px_40px_rgba(15,23,42,0.06)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(139,0,0,0.12)]"
             >
               <div className="relative overflow-hidden">
                 <img
@@ -125,7 +125,7 @@ export function SamplesPage({ onBack, onOpenContact }: SamplesPageProps) {
                   alt={language === 'vi' ? item.viTitle : item.enTitle}
                   className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-gray-700 shadow-sm">
+                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-none bg-white/90 px-3 py-1 text-xs font-medium text-gray-700 shadow-sm">
                   <Eye size={14} />
                   <span>{language === 'vi' ? 'Mẫu nổi bật' : 'Featured sample'}</span>
                 </div>
@@ -140,7 +140,7 @@ export function SamplesPage({ onBack, onOpenContact }: SamplesPageProps) {
                 </p>
                 <button
                   onClick={onOpenContact}
-                  className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-sm text-amber-800 transition-colors hover:bg-amber-100"
+                  className="inline-flex items-center gap-2 rounded-none bg-amber-50 px-4 py-2 text-sm text-amber-800 transition-colors hover:bg-amber-100"
                 >
                   <MessageCircle size={15} />
                   <span>{language === 'vi' ? 'Hỏi mẫu này' : 'Ask about this sample'}</span>

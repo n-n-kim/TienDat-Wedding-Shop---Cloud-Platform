@@ -24,14 +24,14 @@ export function Hero({ onOpenSamples }: HeroProps) {
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={onOpenSamples}
-                className="px-8 py-3 rounded-lg transition-all hover:shadow-lg"
+                className="px-8 py-3 rounded-none transition-all hover:shadow-lg"
                 style={{ backgroundColor: '#8B0000', color: 'white' }}
               >
                 {t('hero.btn1')}
               </button>
               <button
                 onClick={() => scrollToSection('contact')}
-                className="px-8 py-3 rounded-lg transition-all hover:shadow-md"
+                className="px-8 py-3 rounded-none transition-all hover:shadow-md"
                 style={{ backgroundColor: '#B8860B', color: 'white' }}
               >
                 {t('hero.btn2')}
@@ -42,34 +42,34 @@ export function Hero({ onOpenSamples }: HeroProps) {
           <div className="relative">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <div className="bg-white p-6 rounded-2xl shadow-lg border border-red-100">
+                <div className="bg-white p-6 rounded-none shadow-lg border border-red-100">
                   <img
                     src="/images/pic1.jpg"
                     alt={t('hero.card1')}
-                    className="aspect-[3/4] w-full rounded-lg object-cover"
+                    className="aspect-[3/4] w-full rounded-none object-cover"
                   />
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-lg border border-amber-100">
+                <div className="bg-white p-6 rounded-none shadow-lg border border-amber-100">
                   <img
                     src="/images/pic3.jpg"
                     alt={t('hero.card2')}
-                    className="aspect-[3.5/2] w-full rounded-lg object-cover"
+                    className="aspect-[3.5/2] w-full rounded-none object-cover"
                   />
                 </div>
               </div>
               <div className="space-y-4 pt-8">
-                <div className="bg-white p-6 rounded-2xl shadow-lg border border-amber-100">
+                <div className="bg-white p-6 rounded-none shadow-lg border border-amber-100">
                   <img
                     src="/images/pic4.jpg"
                     alt={t('hero.card3')}
-                    className="aspect-[3.5/2] w-full rounded-lg object-cover"
+                    className="aspect-[3.5/2] w-full rounded-none object-cover"
                   />
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-lg border border-red-100">
+                <div className="bg-white p-6 rounded-none shadow-lg border border-red-100">
                   <img
                     src="/images/pic2.jpg"
                     alt={t('hero.card4')}
-                    className="aspect-[3/4] w-full rounded-lg object-cover"
+                    className="aspect-[3/4] w-full rounded-none object-cover"
                   />
                 </div>
               </div>
