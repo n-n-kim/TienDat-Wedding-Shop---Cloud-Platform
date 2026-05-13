@@ -74,6 +74,14 @@ function getAllowedClientIds() {
 }
 
 function extractBearerToken(req) {
+  const directGoogleToken =
+    req.headers?.['x-google-id-token'] ||
+    req.headers?.['X-Google-Id-Token'];
+
+  if (typeof directGoogleToken === 'string' && directGoogleToken.trim()) {
+    return directGoogleToken.trim();
+  }
+
   const authorization = req.headers?.authorization || req.headers?.Authorization;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {

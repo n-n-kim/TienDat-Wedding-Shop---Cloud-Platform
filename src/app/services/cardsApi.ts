@@ -89,6 +89,7 @@ function getAuthHeaders(): Record<string, string> {
 
   return {
     Authorization: `Bearer ${user.idToken}`,
+    'X-Google-Id-Token': user.idToken,
   };
 }
 
