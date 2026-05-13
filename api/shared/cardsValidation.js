@@ -1,5 +1,42 @@
-const allowedColorSchemes = new Set(['red-gold', 'pink-gold', 'white-gold', 'burgundy']);
-const allowedBackgrounds = new Set(['floral', 'gradient', 'minimal', 'luxury']);
+const allowedColorSchemes = new Set([
+  'red-gold',
+  'pink-gold',
+  'white-gold',
+  'burgundy',
+  'sage-cream',
+  'navy-champagne',
+  'lavender-silver',
+  'terracotta-pearl',
+]);
+const allowedBackgrounds = new Set([
+  'floral',
+  'gradient',
+  'minimal',
+  'luxury',
+  'botanical',
+  'watercolor',
+  'arch',
+  'starlight',
+]);
+const allowedStylePresets = new Set([
+  'classic',
+  'garden',
+  'modern',
+  'royal',
+  'editorial',
+  'minimalist',
+]);
+const allowedCardFormats = new Set(['portrait']);
+const allowedContentLanguages = new Set(['vi', 'en', 'bilingual']);
+const allowedEventTypes = new Set(['wedding', 'engagement', 'reception', 'save-the-date']);
+const allowedEmbellishments = new Set([
+  'wax-seal',
+  'ribbon',
+  'venue-map',
+  'monogram',
+  'photo-panel',
+  'qr-rsvp',
+]);
 const allowedStatuses = new Set(['draft', 'submitted']);
 
 function validateCreatePayload(payload) {
@@ -43,6 +80,22 @@ function validateCardData(cardData) {
     return 'cardData.background is invalid.';
   }
 
+  if (!allowedStylePresets.has(cardData.stylePreset)) {
+    return 'cardData.stylePreset is invalid.';
+  }
+
+  if (!allowedCardFormats.has(cardData.cardFormat)) {
+    return 'cardData.cardFormat is invalid.';
+  }
+
+  if (!allowedContentLanguages.has(cardData.contentLanguage)) {
+    return 'cardData.contentLanguage is invalid.';
+  }
+
+  if (!allowedEventTypes.has(cardData.eventType)) {
+    return 'cardData.eventType is invalid.';
+  }
+
   const textFields = [
     'brideName',
     'groomName',
@@ -51,11 +104,23 @@ function validateCardData(cardData) {
     'venue',
     'date',
     'time',
+    'dressCode',
+    'rsvpContact',
   ];
 
   for (const field of textFields) {
     if (typeof cardData[field] !== 'string') {
       return `cardData.${field} must be a string.`;
+    }
+  }
+
+  if (!Array.isArray(cardData.embellishments)) {
+    return 'cardData.embellishments must be an array.';
+  }
+
+  for (const item of cardData.embellishments) {
+    if (!allowedEmbellishments.has(item)) {
+      return 'cardData.embellishments contains an invalid value.';
     }
   }
 

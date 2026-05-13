@@ -8,6 +8,13 @@ export interface CardData {
   time: string;
   colorScheme: string;
   background: string;
+  stylePreset: string;
+  cardFormat: string;
+  contentLanguage: string;
+  eventType: string;
+  dressCode: string;
+  rsvpContact: string;
+  embellishments: string[];
 }
 
 export type CardStatus = 'draft' | 'submitted';

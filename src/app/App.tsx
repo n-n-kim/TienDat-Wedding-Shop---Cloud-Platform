@@ -49,6 +49,14 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const openConsultChat = () => {
+    setCurrentView('home');
+
+    window.setTimeout(() => {
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   const goBack = () => {
     setCurrentView(previousViewBeforeLogin);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -64,7 +72,13 @@ function AppContent() {
   }
 
   if (currentView === 'designer') {
-    return <WeddingCardDesigner onBack={goHome} onOpenLogin={() => openLogin('designer')} />;
+    return (
+      <WeddingCardDesigner
+        onBack={goHome}
+        onOpenConsult={openConsultChat}
+        onOpenLogin={() => openLogin('designer')}
+      />
+    );
   }
 
   if (currentView === 'adminChat') {

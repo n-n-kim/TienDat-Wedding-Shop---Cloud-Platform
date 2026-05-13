@@ -192,9 +192,9 @@ export function Contact({ onOpenLogin }: ContactProps) {
           <aside className="space-y-6">
             <div className="overflow-hidden rounded-[2rem] border border-red-100 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
               <div className="bg-[linear-gradient(135deg,#8B0000_0%,#B8860B_100%)] px-6 py-7 text-white">
-                <div className="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs">
+                {/* <div className="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs">
                   Messenger-style chat
-                </div>
+                </div> */}
                 <h3 className="text-2xl font-semibold">
                   {language === 'vi' ? 'Chat trực tiếp với admin' : 'Chat directly with admin'}
                 </h3>
