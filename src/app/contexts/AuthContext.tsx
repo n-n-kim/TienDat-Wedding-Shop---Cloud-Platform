@@ -3,7 +3,6 @@ import {
   AUTH_SESSION_EVENT,
   clearStoredUser,
   getStoredUser,
-  hasValidGoogleIdToken,
   setStoredUser,
 } from '../services/googleSession';
 
@@ -37,12 +36,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (savedUser.idToken && !hasValidGoogleIdToken(savedUser.idToken)) {
-        setUser(null);
-        clearStoredUser();
-        return;
-      }
-
       setUser(savedUser);
     };
 
@@ -64,26 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearStoredUser();
   };
 
-  useEffect(() => {
-    if (!user?.idToken) {
-      return;
-    }
-
-    const syncGoogleSession = () => {
-      if (!hasValidGoogleIdToken(user.idToken)) {
-        setUser(null);
-        clearStoredUser();
-      }
-    };
-
-    syncGoogleSession();
-
-    const intervalId = window.setInterval(syncGoogleSession, 60_000);
-
-    return () => window.clearInterval(intervalId);
-  }, [user]);
-
-  const canUseCloudSave = hasValidGoogleIdToken(user?.idToken);
+  const canUseCloudSave = Boolean(user?.idToken);
 
   return (
     <AuthContext.Provider

@@ -3,7 +3,6 @@ import {
   clearStoredUser,
   getGoogleSessionErrorMessage,
   getStoredUser,
-  hasValidGoogleIdToken,
 } from './googleSession';
 
 const API_BASE = '/api/cards';
@@ -94,11 +93,6 @@ function getAuthHeaders(): Record<string, string> {
 
   if (!user?.idToken) {
     return {};
-  }
-
-  if (!hasValidGoogleIdToken(user.idToken)) {
-    clearStoredUser();
-    throw new Error(getGoogleSessionErrorMessage());
   }
 
   return {
