@@ -47,7 +47,7 @@ function AppContent() {
   }
 
   if (currentView === 'designer') {
-    return <WeddingCardDesigner onBack={goHome} />;
+    return <WeddingCardDesigner onBack={goHome} onOpenLogin={openLogin} />;
   }
 
   return (

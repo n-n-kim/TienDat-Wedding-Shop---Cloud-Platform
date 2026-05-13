@@ -1,4 +1,10 @@
 import type { SaveWeddingCardInput, WeddingCardDesign } from '../types/weddingCard';
+import {
+  clearStoredUser,
+  getGoogleSessionErrorMessage,
+  getStoredUser,
+  hasValidGoogleIdToken,
+} from './googleSession';
 
 const API_BASE = '/api/cards';
 
@@ -65,6 +71,11 @@ export async function deleteWeddingCardDesign(id: string): Promise<void> {
 }
 
 async function buildApiError(response: Response, fallbackMessage: string): Promise<Error> {
+  if (response.status === 401) {
+    clearStoredUser();
+    return new Error(getGoogleSessionErrorMessage());
+  }
+
   try {
     const data = (await response.json()) as { message?: string };
 
@@ -79,23 +90,18 @@ async function buildApiError(response: Response, fallbackMessage: string): Promi
 }
 
 function getAuthHeaders(): Record<string, string> {
-  const storedUser = localStorage.getItem('user');
+  const user = getStoredUser();
 
-  if (!storedUser) {
+  if (!user?.idToken) {
     return {};
   }
 
-  try {
-    const user = JSON.parse(storedUser) as { idToken?: string | null };
-
-    if (!user.idToken) {
-      return {};
-    }
-
-    return {
-      Authorization: `Bearer ${user.idToken}`,
-    };
-  } catch {
-    return {};
+  if (!hasValidGoogleIdToken(user.idToken)) {
+    clearStoredUser();
+    throw new Error(getGoogleSessionErrorMessage());
   }
+
+  return {
+    Authorization: `Bearer ${user.idToken}`,
+  };
 }

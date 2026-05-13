@@ -47,8 +47,20 @@ async function requireAuthenticatedUser(context, req) {
       avatar: payload.picture || '',
     };
   } catch (error) {
-    context.log.warn('Google ID token verification failed', error.message);
-    json(context, 401, { message: 'Invalid or expired Google ID token.' });
+    const debugPayload = decodeJwtPayload(idToken);
+
+    context.log.warn('Google ID token verification failed', {
+      errorMessage: error?.message || 'Unknown Google token verification error.',
+      expectedAudience: GOOGLE_CLIENT_ID || null,
+      tokenAudience: debugPayload?.aud || null,
+      tokenIssuer: debugPayload?.iss || null,
+      tokenExpiry: debugPayload?.exp || null,
+      tokenSubject: debugPayload?.sub || null,
+    });
+
+    json(context, 401, {
+      message: error?.message || 'Invalid or expired Google ID token.',
+    });
     return null;
   }
 }
@@ -61,6 +73,24 @@ function extractBearerToken(req) {
   }
 
   return authorization.slice('Bearer '.length).trim();
+}
+
+function decodeJwtPayload(token) {
+  try {
+    const [, payload] = token.split('.');
+
+    if (!payload) {
+      return null;
+    }
+
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+    const jsonPayload = Buffer.from(padded, 'base64').toString('utf8');
+
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
 }
 
 module.exports = {

@@ -12,6 +12,7 @@ import type { CardData, WeddingCardDesign } from '../types/weddingCard';
 
 interface WeddingCardDesignerProps {
   onBack: () => void;
+  onOpenLogin: () => void;
 }
 
 const colorSchemes = [
@@ -40,7 +41,7 @@ const initialCardData: CardData = {
   background: 'floral',
 };
 
-export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
+export function WeddingCardDesigner({ onBack, onOpenLogin }: WeddingCardDesignerProps) {
   const { language } = useLanguage();
   const { canUseCloudSave, user } = useAuth();
 
@@ -311,6 +312,14 @@ export function WeddingCardDesigner({ onBack }: WeddingCardDesignerProps) {
             </p>
             {cloudMessage ? <p className="mt-2 text-sm text-green-700">{cloudMessage}</p> : null}
             {cloudError ? <p className="mt-2 text-sm text-red-600">{cloudError}</p> : null}
+            {!canUseCloudSave ? (
+              <button
+                onClick={onOpenLogin}
+                className="mt-3 rounded-lg border border-amber-300 px-3 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50"
+              >
+                {language === 'vi' ? 'Dang nhap lai de luu cloud' : 'Sign in again for cloud save'}
+              </button>
+            ) : null}
           </div>
 
           <div className="rounded-xl bg-[#faf7f2] p-4 text-sm text-gray-600">
