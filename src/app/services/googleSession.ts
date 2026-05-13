@@ -78,7 +78,9 @@ function decodeJwtPayload<T>(token: string): T | null {
       normalized.length + ((4 - (normalized.length % 4)) % 4),
       '=',
     );
-    const jsonPayload = window.atob(padded);
+    const decoded = window.atob(padded);
+    const bytes = Uint8Array.from(decoded, (char) => char.charCodeAt(0));
+    const jsonPayload = new TextDecoder().decode(bytes);
 
     return JSON.parse(jsonPayload) as T;
   } catch {
