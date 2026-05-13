@@ -1,126 +1,750 @@
 # Tien Dat Wedding Platform
 
-Tien Dat Wedding Platform is a React + Vite web app for:
+## 1. Tổng quan dự án
 
-- browsing sample invitation products
-- designing wedding invitations
-- saving invitation drafts to the cloud
-- chatting with admin for consultation
+`Tien Dat Wedding Platform` là một web app hỗ trợ:
 
-The project is deployed with Azure Static Web Apps, uses Azure Functions for API endpoints, and stores cloud data in Azure Table Storage.
+- giới thiệu dịch vụ thiệp cưới và in ấn
+- xem các mẫu thiệp có sẵn
+- tự thiết kế thiệp cưới trực tiếp trên web
+- lưu bản nháp thiết kế lên cloud
+- nhắn tin tư vấn giữa user và admin
+- để admin đăng nhập và trả lời hội thoại của khách hàng
 
-## Current Features
+Dự án được xây dựng theo hướng `frontend tách khỏi backend`, trong đó:
 
-### 1. Landing Page
+- frontend chạy bằng `React + TypeScript + Vite`
+- backend API chạy bằng `Azure Functions`
+- dữ liệu cloud được lưu trong `Azure Table Storage`
+- xác thực dùng `Google Identity Services`
+- triển khai dùng `Azure Static Web Apps`
 
-The home page currently keeps the flow simple:
+---
+
+## 2. Bài toán mà dự án giải quyết
+
+Website này không chỉ là trang giới thiệu dịch vụ, mà còn đóng vai trò như một nền tảng mini cho quy trình đặt thiệp:
+
+1. khách hàng xem các mẫu thiệp sẵn có
+2. khách hàng tự tùy chỉnh một mẫu thiệp cưới
+3. khách hàng lưu bản nháp thiết kế của mình
+4. khách hàng bấm `Tư vấn đặt ngay` để chuyển sang phần chat
+5. admin đăng nhập Gmail được cấp quyền để xem và phản hồi tin nhắn
+
+Nhờ đó, dự án thể hiện được cả 3 nhóm chức năng:
+
+- `UI/UX frontend`
+- `cloud backend`
+- `authentication + lưu trữ dữ liệu`
+
+---
+
+## 3. Chức năng hiện tại
+
+### 3.1. Trang chủ
+
+Trang chủ hiện được tinh gọn, chỉ giữ các phần chính:
 
 - `Hero`
-- `Ordering Process`
-- `Consultation Chat`
+- `Quy trình đặt hàng`
+- `Liên hệ tư vấn` dạng chat
 
-### 2. Sample Product Page
+Mục tiêu của bố cục này là đưa người dùng đi thẳng vào hành động chính:
 
-There is a separate page for viewing sample invitation products.
+- xem mẫu
+- bắt đầu thiết kế
+- hoặc chat tư vấn
 
-Users can open it from:
+### 3.2. Trang xem mẫu sản phẩm
 
-- the `Hero` button
-- the `Header`
+Người dùng có thể mở một trang riêng để xem:
 
-This page is useful for browsing invitation styles before moving into the chat or designer flow.
+- mẫu thiệp cưới
+- mẫu thiệp mời
+- mẫu danh thiếp
 
-### 3. Wedding Card Designer
+Trang này hoạt động như một gallery tham khảo trước khi khách hàng chuyển sang thiết kế hoặc nhắn tin.
 
-The invitation designer now supports:
+### 3.3. Trình thiết kế thiệp cưới
 
-- fixed `5x7` card ratio only
-- bilingual setup options: Vietnamese, English, or Bilingual
-- multiple color palettes
-- multiple visual style presets
-- multiple background styles
-- invitation event types
-- decorative items such as:
-  - wax seal
-  - ribbon wrap
-  - venue map
-  - monogram
-  - photo panel
-  - QR RSVP
+Trang thiết kế cho phép người dùng:
 
-The preview card is intentionally simplified:
+- nhập tên cô dâu, chú rể
+- nhập cha mẹ hai bên
+- nhập ngày, giờ, địa điểm
+- chọn `ngôn ngữ nội dung`: tiếng Việt, tiếng Anh, song ngữ
+- chọn loại sự kiện: lễ thành hôn, lễ đính hôn, tiệc cưới, save the date
+- chọn `bảng màu`
+- chọn `phong cách`
+- chọn `kiểu nền`
+- chọn `items / embellishments`
+- lưu bản thiết kế lên cloud
 
-- all key details stay inside the card
-- no long quote block
-- no message text fields for Vietnamese / English invitation copy
-- layout focuses on the main invitation data only
+Phiên bản hiện tại đã được tối giản để giống thiệp thật hơn:
 
-### 4. Cloud Save
+- chỉ dùng tỷ lệ `5x7`
+- toàn bộ nội dung nằm gọn trong khung thiệp
+- không còn phần quote dài
+- không để nội dung tràn ra ngoài
+- giao diện trang thiết kế hiển thị bằng tiếng Việt
 
-Signed-in users can save invitation drafts to the cloud.
+### 3.4. Lưu bản nháp lên cloud
 
-Saved data includes:
+Nếu người dùng đăng nhập bằng Google, họ có thể:
 
-- bride / groom names
-- parent information
-- venue
-- date
-- time
-- palette
-- background
-- style preset
-- invitation language mode
-- event type
-- dress code
-- RSVP contact
-- embellishment items
+- lưu thiết kế mới
+- cập nhật thiết kế cũ
+- tải lại thiết kế đã lưu
+- xóa thiết kế khỏi cloud
 
-### 5. Consultation Chat
+Dữ liệu lưu bao gồm toàn bộ thuộc tính quan trọng của tấm thiệp, không chỉ là text cơ bản.
 
-The consultation section has been converted into a Messenger-style chat UI.
+### 3.5. Chat tư vấn giữa user và admin
 
-Users can:
+Phần `Liên hệ tư vấn` đã được chuyển từ form tĩnh thành giao diện chat kiểu Messenger.
 
-- sign in with Google
-- enter phone number
-- send the first consultation message
-- continue chatting in the same thread
+Người dùng có thể:
 
-All chat messages are stored in the cloud.
+- đăng nhập bằng Google
+- nhập số điện thoại
+- gửi tin nhắn đầu tiên
+- tiếp tục nhắn trong cùng hội thoại
+- xem lại lịch sử chat
 
-### 6. Admin Inbox
+Tin nhắn được lưu trên cloud và sẽ xuất hiện trong inbox của admin.
 
-Admin can:
+### 3.6. Admin chat inbox
 
-- view all user conversations
-- open a specific thread
-- reply to users
-- close or reopen a conversation
+Admin đăng nhập bằng Gmail được cấp quyền sẽ nhìn thấy:
 
-Default admin email:
+- danh sách tất cả hội thoại
+- nội dung từng cuộc chat
+- số tin nhắn chưa đọc
+- trạng thái mở / đóng hội thoại
+- ô nhập phản hồi để trả lời user
+
+Email admin mặc định hiện tại là:
 
 `kim1801x5@gmail.com`
 
-The app still supports setting admin emails through environment variables, but if not provided it falls back to this Gmail address.
+Nếu không truyền biến môi trường admin, hệ thống sẽ fallback về email này.
 
-### 7. Consult Button Flow
+### 3.7. Nút `Tư vấn đặt ngay`
 
-Inside the wedding card designer, the `Tu van dat ngay` / `Consult & Order` button now sends the user back to the home page and scrolls directly to the consultation chat section.
+Trong trang thiết kế, khi người dùng bấm `Tư vấn đặt ngay`:
 
-## Tech Stack
+- app quay về `home`
+- tự cuộn đến section chat `#contact`
 
-- Frontend: React, TypeScript, Vite, Tailwind CSS
-- Authentication: Google Identity Services
-- Hosting: Azure Static Web Apps
-- API: Azure Functions
-- Cloud storage: Azure Table Storage
-- CI/CD: GitHub Actions
+Điều này giúp nối liền luồng:
 
-## Project Structure
+`xem mẫu -> thiết kế -> chat tư vấn`
+
+---
+
+## 4. Công nghệ sử dụng và dùng để làm gì
+
+Đây là phần quan trọng nhất để trình bày trong báo cáo hoặc README bàn giao.
+
+### 4.1. Tổng hợp nhanh theo nhóm
+
+| Công nghệ | Vai trò chính |
+| --- | --- |
+| `React` | Xây dựng giao diện theo component |
+| `TypeScript` | Kiểm soát kiểu dữ liệu cho frontend |
+| `Vite` | Dev server và build frontend |
+| `Tailwind CSS` | Styling giao diện nhanh bằng utility class |
+| `Lucide React` | Bộ icon cho UI |
+| `Context API` | Quản lý trạng thái ngôn ngữ và đăng nhập |
+| `Google Identity Services` | Đăng nhập Google ở frontend |
+| `Fetch API` | Gọi API giữa frontend và Azure Functions |
+| `Azure Static Web Apps` | Hosting frontend + tích hợp API |
+| `Azure Functions` | Xử lý backend dạng serverless |
+| `@azure/data-tables` | Giao tiếp với Azure Table Storage |
+| `Azure Table Storage` | Lưu bản thiết kế, hội thoại và tin nhắn |
+| `google-auth-library` | Xác minh Google ID Token ở backend |
+| `GitHub Actions` | CI/CD build và deploy |
+
+### 4.2. React dùng cho phần nào
+
+`React` là nền tảng chính của frontend. Mỗi phần giao diện được tách thành component riêng:
+
+- `Header.tsx`: thanh điều hướng
+- `Hero.tsx`: phần giới thiệu đầu trang
+- `Process.tsx`: quy trình đặt hàng
+- `SamplesPage.tsx`: trang xem mẫu thiệp
+- `WeddingCardDesigner.tsx`: trình thiết kế thiệp
+- `Contact.tsx`: chat phía user
+- `AdminChatPage.tsx`: inbox phía admin
+- `LoginPage.tsx`: trang đăng nhập
+
+Lợi ích của React trong dự án này:
+
+- dễ chia nhỏ giao diện
+- dễ tái sử dụng UI
+- dễ điều khiển màn hình theo state
+- phù hợp với flow một trang, nhiều view
+
+### 4.3. TypeScript dùng cho phần nào
+
+`TypeScript` được dùng để định nghĩa kiểu dữ liệu cho:
+
+- thông tin user
+- dữ liệu thiết kế thiệp
+- hội thoại chat
+- tin nhắn chat
+- props của component
+
+Ví dụ:
+
+- `src/app/types/weddingCard.ts`
+- `src/app/types/chat.ts`
+
+Lợi ích:
+
+- giảm lỗi khi truyền sai dữ liệu
+- giúp code dễ bảo trì
+- dễ mở rộng chức năng sau này
+
+### 4.4. Vite dùng cho phần nào
+
+`Vite` được dùng làm:
+
+- dev server khi chạy local
+- bundler khi build production
+
+Lợi ích:
+
+- khởi động nhanh
+- build gọn
+- phù hợp với React + TypeScript
+
+Các lệnh chính:
+
+```bash
+npm run dev
+npm run build
+```
+
+### 4.5. Tailwind CSS dùng cho phần nào
+
+`Tailwind CSS` được dùng để tạo giao diện nhanh bằng class utility trực tiếp trong JSX.
+
+Tailwind đang xử lý:
+
+- layout
+- spacing
+- typography
+- màu sắc
+- border
+- shadow
+- responsive
+
+Ví dụ các component sử dụng Tailwind rất nhiều:
+
+- `Contact.tsx`
+- `AdminChatPage.tsx`
+- `WeddingCardDesigner.tsx`
+- `SamplesPage.tsx`
+
+Lợi ích:
+
+- chỉnh giao diện rất nhanh
+- không phải viết quá nhiều CSS riêng
+- giữ style đồng nhất giữa các trang
+
+### 4.6. Lucide React dùng cho phần nào
+
+`lucide-react` là thư viện icon đang được dùng xuyên suốt dự án:
+
+- icon menu
+- icon chat
+- icon điện thoại
+- icon quay lại
+- icon gửi tin nhắn
+- icon save / delete / sparkles
+
+Lợi ích:
+
+- icon nhẹ
+- dùng trực tiếp như component React
+- đồng bộ phong cách giao diện
+
+### 4.7. Context API dùng cho phần nào
+
+Dự án hiện dùng `React Context API` cho 2 phần rất quan trọng:
+
+#### `LanguageContext`
+
+File:
+
+- `src/app/contexts/LanguageContext.tsx`
+
+Chức năng:
+
+- lưu ngôn ngữ hiện tại `vi` hoặc `en`
+- cung cấp hàm `t()` để lấy text theo key
+- cho phép UI đổi ngôn ngữ ở nhiều component
+
+#### `AuthContext`
+
+File:
+
+- `src/app/contexts/AuthContext.tsx`
+
+Chức năng:
+
+- lưu user đang đăng nhập
+- xác định đã đăng nhập hay chưa
+- xác định có cloud token hay không
+- xác định user có phải admin hay không
+
+Lợi ích của Context API ở đây:
+
+- tránh truyền props nhiều tầng
+- dễ dùng ở toàn app
+- đủ gọn cho quy mô dự án này
+
+### 4.8. Google Identity Services dùng cho phần nào
+
+`Google Identity Services` được dùng ở frontend để:
+
+- hiển thị nút đăng nhập Google
+- nhận Google ID token sau khi user đăng nhập
+
+File chính:
+
+- `src/app/components/LoginPage.tsx`
+
+Khi đăng nhập thành công, frontend lấy được:
+
+- `sub`
+- `name`
+- `email`
+- `picture`
+- `credential` là Google ID token
+
+Token này sẽ được lưu vào session local để frontend gọi API cloud.
+
+### 4.9. Session lưu local dùng cho phần nào
+
+Phần session frontend đang được xử lý qua:
+
+- `src/app/services/googleSession.ts`
+
+Chức năng:
+
+- lưu user vào local/session storage
+- đọc user đã lưu
+- xóa user khi logout hoặc token lỗi
+- phát event đồng bộ trạng thái đăng nhập
+
+Lợi ích:
+
+- giữ trạng thái đăng nhập giữa các lần reload
+- làm base cho `AuthContext`
+
+### 4.10. Fetch API dùng cho phần nào
+
+Frontend gọi backend bằng `fetch`.
+
+Các service chính:
+
+- `src/app/services/cardsApi.ts`
+- `src/app/services/chatApi.ts`
+
+Phần này chịu trách nhiệm:
+
+- gọi API tạo / đọc / sửa / xóa bản thiết kế
+- gọi API tạo hội thoại
+- gọi API lấy tin nhắn
+- gọi API gửi tin nhắn
+- gọi API đóng / mở hội thoại
+
+Ngoài ra nó còn:
+
+- tự gắn `Authorization: Bearer <token>`
+- tự gắn `X-Google-Id-Token`
+- xử lý lỗi `401`
+- tự logout local nếu token không hợp lệ
+
+### 4.11. Azure Static Web Apps dùng cho phần nào
+
+`Azure Static Web Apps` là nền tảng deploy chính của dự án.
+
+Nó được dùng để:
+
+- host frontend React build ra từ Vite
+- kết nối frontend với thư mục `api/`
+- triển khai cả web app lẫn Azure Functions trong cùng hệ thống
+
+Lợi ích:
+
+- phù hợp với đồ án có frontend + serverless API
+- deploy đơn giản từ GitHub
+- dễ cấu hình biến môi trường
+
+### 4.12. Azure Functions dùng cho phần nào
+
+`Azure Functions` đóng vai trò backend serverless.
+
+Backend hiện cung cấp 2 nhóm API chính:
+
+#### API cho bản thiết kế thiệp
+
+- `GET /api/cards`
+- `POST /api/cards`
+- `GET /api/cards/{id}`
+- `PUT /api/cards/{id}`
+- `DELETE /api/cards/{id}`
+
+#### API cho chat tư vấn
+
+- `GET /api/chat/conversations`
+- `POST /api/chat/conversations`
+- `GET /api/chat/conversations/{id}`
+- `PUT /api/chat/conversations/{id}`
+- `GET /api/chat/conversations/{id}/messages`
+- `POST /api/chat/conversations/{id}/messages`
+
+Các thư mục chính:
+
+- `api/cards`
+- `api/cards-item`
+- `api/chat-conversations`
+- `api/chat-conversation-item`
+- `api/chat-messages`
+
+Lợi ích của Azure Functions:
+
+- không cần dựng server Express riêng
+- phù hợp chức năng CRUD và auth token
+- tiết kiệm công triển khai
+
+### 4.13. @azure/data-tables dùng cho phần nào
+
+Trong backend, thư viện `@azure/data-tables` được dùng để làm việc với `Azure Table Storage`.
+
+File chính:
+
+- `api/shared/cardsRepository.js`
+- `api/shared/chatRepository.js`
+
+Nó đang xử lý:
+
+- tạo table nếu chưa tồn tại
+- ghi entity mới
+- đọc entity theo key
+- liệt kê entity theo filter
+- cập nhật entity
+- xóa entity
+
+Đây là lớp repository trung gian giữa Function và storage.
+
+### 4.14. Azure Table Storage dùng cho phần nào
+
+`Azure Table Storage` là nơi lưu dữ liệu cloud chính của dự án.
+
+Hiện đang có 3 nhóm dữ liệu:
+
+#### Bảng 1: thiết kế thiệp
+
+Mặc định:
+
+- `WeddingCardDesigns`
+
+Lưu:
+
+- chủ sở hữu thiết kế
+- tiêu đề bản nháp
+- trạng thái
+- `cardData`
+- thời gian tạo / cập nhật
+
+#### Bảng 2: hội thoại chat
+
+Mặc định:
+
+- `ConsultationConversations`
+
+Lưu:
+
+- thông tin user
+- số điện thoại liên hệ
+- trạng thái open/closed
+- tin nhắn cuối
+- số chưa đọc cho admin và user
+
+#### Bảng 3: tin nhắn chat
+
+Mặc định:
+
+- `ConsultationMessages`
+
+Lưu:
+
+- conversationId
+- senderId
+- senderName
+- senderRole
+- content
+- createdAt
+
+Lý do chọn Table Storage:
+
+- đơn giản
+- chi phí thấp
+- phù hợp cho dữ liệu key-value / entity không quá phức tạp
+- đủ tốt cho đồ án cloud quy mô vừa
+
+### 4.15. google-auth-library dùng cho phần nào
+
+Ở backend, `google-auth-library` được dùng để:
+
+- verify Google ID token
+- kiểm tra token có đúng `GOOGLE_CLIENT_ID` hay không
+- lấy thông tin user từ payload
+
+File chính:
+
+- `api/shared/googleAuth.js`
+
+Sau khi xác minh token thành công, backend lấy được:
+
+- `id`
+- `email`
+- `name`
+- `avatar`
+
+Phần này cũng xác định quyền admin theo email.
+
+### 4.16. GitHub Actions dùng cho phần nào
+
+`GitHub Actions` được dùng để tự động build và deploy dự án lên Azure.
+
+Workflow hiện tại:
+
+- `.github/workflows/azure-static-web-apps-orange-hill-077720b00.yml`
+
+Vai trò:
+
+- build frontend
+- publish app lên Azure Static Web Apps
+- dùng secret build như `VITE_GOOGLE_CLIENT_ID`, `VITE_ADMIN_EMAILS`
+
+### 4.17. Những dependency khác trong package.json
+
+`package.json` hiện có khá nhiều dependency từ template hoặc cho khả năng mở rộng sau này như:
+
+- `MUI`
+- `Radix UI`
+- `react-router`
+- `recharts`
+- `motion`
+- `react-hook-form`
+
+Tuy nhiên, ở trạng thái hiện tại của project, các chức năng chính đang chạy thực tế chủ yếu dựa vào:
+
+- `React`
+- `TypeScript`
+- `Vite`
+- `Tailwind CSS`
+- `Lucide React`
+- `Google Identity Services`
+- `Azure Functions`
+- `Azure Table Storage`
+
+Nói cách khác, README và báo cáo nên tập trung vào những công nghệ đang thực sự tham gia vào flow người dùng hiện tại.
+
+---
+
+## 5. Kiến trúc hệ thống
+
+### 5.1. Kiến trúc tổng quát
+
+```text
+Người dùng / Admin
+        |
+        v
+Frontend React (Vite)
+        |
+        v
+Azure Static Web Apps
+        |
+        v
+Azure Functions API
+        |
+        v
+Azure Table Storage
+```
+
+### 5.2. Kiến trúc frontend
+
+Frontend dùng mô hình component + context:
+
+```text
+App.tsx
+  |- AuthProvider
+  |- LanguageProvider
+  |- Header
+  |- Hero
+  |- Process
+  |- Contact
+  |- SamplesPage
+  |- WeddingCardDesigner
+  |- AdminChatPage
+  |- LoginPage
+```
+
+Điểm đáng chú ý:
+
+- app hiện chưa dùng router URL đầy đủ
+- thay vào đó dùng `currentView` trong `App.tsx` để đổi màn hình
+- cách này phù hợp với đồ án nhỏ và dễ kiểm soát flow
+
+### 5.3. Kiến trúc backend
+
+Backend được chia thành:
+
+- `function endpoint`
+- `repository`
+- `validation`
+- `auth helper`
+
+Ví dụ:
+
+- endpoint nhận request và trả response
+- repository xử lý Azure Table Storage
+- validation kiểm tra dữ liệu đầu vào
+- auth helper kiểm tra token và quyền admin
+
+---
+
+## 6. Luồng hoạt động chi tiết
+
+### 6.1. Luồng của user
+
+1. vào trang chủ
+2. xem mẫu thiệp nếu muốn
+3. mở trang thiết kế
+4. nhập thông tin thiệp
+5. nếu muốn lưu cloud thì đăng nhập Google
+6. bấm lưu thiết kế
+7. bấm `Tư vấn đặt ngay`
+8. chuyển sang chat
+9. gửi số điện thoại và tin nhắn cho admin
+
+### 6.2. Luồng của admin
+
+1. đăng nhập bằng Gmail admin
+2. mở `Chat admin` từ header
+3. xem danh sách hội thoại
+4. chọn một user
+5. đọc lịch sử chat
+6. phản hồi tin nhắn
+7. đóng / mở lại hội thoại nếu cần
+
+### 6.3. Luồng xác thực
+
+1. user đăng nhập Google ở frontend
+2. frontend nhận Google ID token
+3. token được lưu local
+4. frontend gọi API kèm token trong header
+5. Azure Functions verify token bằng `google-auth-library`
+6. backend xác định user thường hay admin
+
+---
+
+## 7. Các chức năng gắn với công nghệ nào
+
+### 7.1. Xem mẫu thiệp
+
+Sử dụng:
+
+- `React`
+- `Tailwind CSS`
+- `Lucide React`
+
+Không cần backend vì dữ liệu mẫu hiện được render tĩnh từ frontend.
+
+### 7.2. Thiết kế thiệp cưới
+
+Sử dụng:
+
+- `React state`
+- `TypeScript`
+- `Tailwind CSS`
+
+Nếu chỉ chỉnh sửa giao diện thì chưa cần cloud.
+
+Nếu bấm lưu:
+
+- frontend gọi `cardsApi.ts`
+- Azure Functions xử lý request
+- Azure Table Storage lưu dữ liệu
+
+### 7.3. Đăng nhập Google
+
+Sử dụng:
+
+- `Google Identity Services` ở frontend
+- `google-auth-library` ở backend
+- `AuthContext` để quản lý trạng thái user
+
+### 7.4. Lưu bản nháp lên cloud
+
+Sử dụng:
+
+- `fetch`
+- `Azure Functions`
+- `@azure/data-tables`
+- `Azure Table Storage`
+
+### 7.5. Chat user-admin
+
+Sử dụng:
+
+- `React`
+- `fetch`
+- `Azure Functions`
+- `Azure Table Storage`
+
+Hiện tại chat đang update theo cơ chế:
+
+- polling mỗi 5 giây
+
+Chưa dùng:
+
+- WebSocket
+- SignalR
+
+### 7.6. Phân quyền admin
+
+Sử dụng:
+
+- `AuthContext` ở frontend
+- `googleAuth.js` ở backend
+- biến môi trường `VITE_ADMIN_EMAILS` và `ADMIN_EMAILS`
+
+Fallback hiện tại:
+
+- `kim1801x5@gmail.com`
+
+### 7.7. Deploy và CI/CD
+
+Sử dụng:
+
+- `GitHub Actions`
+- `Azure Static Web Apps`
+
+---
+
+## 8. Cấu trúc thư mục chính
 
 ```text
 src/
   app/
+    App.tsx
     components/
       AdminChatPage.tsx
       Contact.tsx
@@ -155,82 +779,128 @@ api/
     chatValidation.js
     googleAuth.js
     http.js
+
+.github/
+  workflows/
+    azure-static-web-apps-orange-hill-077720b00.yml
 ```
 
-## User Flows
+---
 
-### Normal User Flow
+## 9. Các file quan trọng
 
-1. Open home page
-2. Browse sample invitation page if needed
-3. Open wedding invitation designer
-4. Sign in with Google if cloud save is needed
-5. Save a draft to the cloud
-6. Click `Consult & Order` to jump to the consultation chat
-7. Send a message to admin
+### Frontend
 
-### Admin Flow
+- `src/app/App.tsx`
+  Điều phối view hiện tại của app.
 
-1. Sign in with Google using an allowed admin email
-2. Open `Admin chat` from the header
-3. View all user conversations
-4. Open a conversation
-5. Reply to the user
+- `src/app/contexts/AuthContext.tsx`
+  Quản lý đăng nhập, quyền admin và cloud token.
 
-## Data Model
+- `src/app/contexts/LanguageContext.tsx`
+  Quản lý ngôn ngữ hiển thị.
 
-## A. Wedding Card Drafts
+- `src/app/components/WeddingCardDesigner.tsx`
+  Màn hình thiết kế thiệp cưới.
 
-Stored through:
+- `src/app/components/Contact.tsx`
+  Chat phía user.
 
-- `GET /api/cards`
-- `POST /api/cards`
-- `GET /api/cards/{id}`
-- `PUT /api/cards/{id}`
-- `DELETE /api/cards/{id}`
+- `src/app/components/AdminChatPage.tsx`
+  Inbox chat phía admin.
 
-Each record is stored in Azure Table Storage using:
+- `src/app/services/cardsApi.ts`
+  Service gọi API lưu bản thiết kế.
+
+- `src/app/services/chatApi.ts`
+  Service gọi API chat.
+
+### Backend
+
+- `api/shared/googleAuth.js`
+  Verify Google token và xác định admin.
+
+- `api/shared/cardsRepository.js`
+  CRUD thiết kế thiệp trong Azure Table Storage.
+
+- `api/shared/chatRepository.js`
+  CRUD hội thoại và tin nhắn chat.
+
+- `api/cards/index.js`
+  API list và create thiết kế.
+
+- `api/cards-item/index.js`
+  API get, update, delete một thiết kế.
+
+- `api/chat-conversations/index.js`
+  API list conversation và tạo conversation mới.
+
+- `api/chat-conversation-item/index.js`
+  API cập nhật trạng thái hội thoại.
+
+- `api/chat-messages/index.js`
+  API lấy tin nhắn và gửi tin nhắn mới.
+
+---
+
+## 10. API hiện có
+
+### 10.1. API thiết kế thiệp
+
+| Method | Endpoint | Chức năng |
+| --- | --- | --- |
+| `GET` | `/api/cards` | Lấy danh sách thiết kế của user |
+| `POST` | `/api/cards` | Tạo thiết kế mới |
+| `GET` | `/api/cards/{id}` | Lấy chi tiết một thiết kế |
+| `PUT` | `/api/cards/{id}` | Cập nhật thiết kế |
+| `DELETE` | `/api/cards/{id}` | Xóa thiết kế |
+
+### 10.2. API chat
+
+| Method | Endpoint | Chức năng |
+| --- | --- | --- |
+| `GET` | `/api/chat/conversations` | Lấy danh sách hội thoại |
+| `POST` | `/api/chat/conversations` | Tạo hội thoại mới |
+| `GET` | `/api/chat/conversations/{id}` | Lấy thông tin hội thoại |
+| `PUT` | `/api/chat/conversations/{id}` | Đổi trạng thái open/closed |
+| `GET` | `/api/chat/conversations/{id}/messages` | Lấy danh sách tin nhắn |
+| `POST` | `/api/chat/conversations/{id}/messages` | Gửi tin nhắn mới |
+
+---
+
+## 11. Mô hình dữ liệu cloud
+
+### 11.1. Bản thiết kế thiệp
+
+Partition/Row key:
 
 - `PartitionKey = userId`
 - `RowKey = designId`
 
-The `cardData` model currently includes:
+Các field chính:
 
-- `brideName`
-- `groomName`
-- `brideParents`
-- `groomParents`
-- `venue`
-- `date`
-- `time`
-- `colorScheme`
-- `background`
-- `stylePreset`
-- `cardFormat`
-- `contentLanguage`
-- `eventType`
-- `dressCode`
-- `rsvpContact`
-- `embellishments`
+- `userEmail`
+- `userName`
+- `title`
+- `status`
+- `cardData`
+- `previewImageUrl`
+- `createdAt`
+- `updatedAt`
 
-Note:
+### 11.2. Hội thoại chat
 
-- `cardFormat` is now locked to `portrait` for the fixed `5x7` layout
+Partition/Row key:
 
-## B. Chat Conversations
+- `PartitionKey = conversation`
+- `RowKey = conversationId`
 
-Stored through:
-
-- `GET /api/chat/conversations`
-- `POST /api/chat/conversations`
-- `GET /api/chat/conversations/{id}`
-- `PUT /api/chat/conversations/{id}`
-
-Conversation fields include:
+Các field chính:
 
 - `userId`
 - `userEmail`
 - `userName`
+- `userAvatar`
 - `contactPhone`
 - `status`
 - `lastMessage`
@@ -240,103 +910,71 @@ Conversation fields include:
 - `createdAt`
 - `updatedAt`
 
-## C. Chat Messages
+### 11.3. Tin nhắn chat
 
-Stored through:
+Partition/Row key:
 
-- `GET /api/chat/conversations/{id}/messages`
-- `POST /api/chat/conversations/{id}/messages`
+- `PartitionKey = conversationId`
+- `RowKey = messageId`
 
-Message fields include:
+Các field chính:
 
-- `conversationId`
 - `senderId`
 - `senderName`
 - `senderRole`
 - `content`
 - `createdAt`
 
-## Authentication
+---
 
-The app uses Google Identity Services.
+## 12. Cách chạy local
 
-### Frontend
-
-- user signs in on `LoginPage`
-- Google ID token is stored locally
-- frontend sends the token to the backend through:
-
-`Authorization: Bearer <google-id-token>`
-
-and also:
-
-`X-Google-Id-Token`
-
-### Backend
-
-Azure Functions verify the Google ID token and extract:
-
-- `userId`
-- `userEmail`
-- `userName`
-
-### Admin Permission Logic
-
-Admin access is checked in both frontend and backend.
-
-Priority order:
-
-1. Use `VITE_ADMIN_EMAILS` and `ADMIN_EMAILS` if provided
-2. If not provided, fallback to:
-
-`kim1801x5@gmail.com`
-
-## Local Development
-
-### 1. Install dependencies
+### 12.1. Cài dependency frontend
 
 ```bash
 npm install
 ```
 
-### 2. Create `.env`
+### 12.2. Tạo file `.env`
 
-Create `.env` from `.env.example`.
+Tạo `.env` từ `.env.example`
 
-Example:
+Ví dụ:
 
 ```env
 VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 VITE_ADMIN_EMAILS=kim1801x5@gmail.com
 ```
 
-### 3. Run frontend
+### 12.3. Chạy frontend
 
 ```bash
 npm run dev
 ```
 
-### 4. Build check
+### 12.4. Build kiểm tra
 
 ```bash
 npm run build
 ```
 
-## Azure Functions Local Settings
+---
 
-If you want to run the Azure Functions side locally later:
+## 13. Cách cấu hình backend local
 
-1. Copy:
+Nếu muốn test Azure Functions local:
+
+1. copy file:
 
 `api/local.settings.sample.json`
 
-to:
+thành:
 
 `api/local.settings.json`
 
-2. Fill in real values
+2. điền giá trị thật
 
-Example:
+Ví dụ:
 
 ```json
 {
@@ -354,14 +992,16 @@ Example:
 }
 ```
 
-## Environment Variables
+---
 
-### Frontend
+## 14. Biến môi trường cần có
+
+### 14.1. Frontend
 
 - `VITE_GOOGLE_CLIENT_ID`
 - `VITE_ADMIN_EMAILS`
 
-### API / Azure Functions
+### 14.2. Backend / Azure Functions
 
 - `GOOGLE_CLIENT_ID`
 - `AZURE_STORAGE_CONNECTION_STRING`
@@ -370,20 +1010,30 @@ Example:
 - `AZURE_CHAT_MESSAGES_TABLE_NAME`
 - `ADMIN_EMAILS`
 
-## Azure Manual Setup
+---
 
-This is the main manual part after coding.
+## 15. Phần manual cần làm sau code
 
-### 1. Create Storage Account
+Đây là phần cấu hình cloud mà bạn vẫn cần làm tay.
 
-In Azure:
+### 15.1. Tạo Google Client ID
 
-- create a `Storage Account`
-- copy its `Connection String`
+Bạn cần tạo OAuth client ở Google Cloud Console để lấy:
 
-### 2. Configure Azure Static Web Apps environment variables
+- `VITE_GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_ID`
 
-Add:
+### 15.2. Tạo Storage Account trên Azure
+
+Bạn cần:
+
+- tạo `Storage Account`
+- lấy `Connection String`
+- gán vào `AZURE_STORAGE_CONNECTION_STRING`
+
+### 15.3. Cấu hình Azure Static Web Apps
+
+Trong Azure, thêm các biến:
 
 - `VITE_GOOGLE_CLIENT_ID`
 - `VITE_ADMIN_EMAILS`
@@ -394,106 +1044,107 @@ Add:
 - `AZURE_CHAT_MESSAGES_TABLE_NAME`
 - `ADMIN_EMAILS`
 
-Recommended values:
+Giá trị khuyến nghị:
 
-- `VITE_ADMIN_EMAILS=kim1801x5@gmail.com`
-- `ADMIN_EMAILS=kim1801x5@gmail.com`
-- `AZURE_TABLE_NAME=WeddingCardDesigns`
-- `AZURE_CHAT_CONVERSATIONS_TABLE_NAME=ConsultationConversations`
-- `AZURE_CHAT_MESSAGES_TABLE_NAME=ConsultationMessages`
+```env
+VITE_ADMIN_EMAILS=kim1801x5@gmail.com
+ADMIN_EMAILS=kim1801x5@gmail.com
+AZURE_TABLE_NAME=WeddingCardDesigns
+AZURE_CHAT_CONVERSATIONS_TABLE_NAME=ConsultationConversations
+AZURE_CHAT_MESSAGES_TABLE_NAME=ConsultationMessages
+```
 
-### 3. Redeploy
+### 15.4. Redeploy
 
-After saving environment variables:
+Sau khi đổi biến môi trường, cần redeploy lại app để frontend và backend nhận cấu hình mới.
 
-- save configuration
-- redeploy the application
+---
 
-## GitHub Actions
+## 16. GitHub Actions và deploy
 
-Workflow file:
+Workflow hiện tại:
 
-[.github/workflows/azure-static-web-apps-orange-hill-077720b00.yml](/abs/path/d:/Y3S2/Cloud/BTL/.github/workflows/azure-static-web-apps-orange-hill-077720b00.yml:1)
+- `.github/workflows/azure-static-web-apps-orange-hill-077720b00.yml`
 
-Current frontend build secrets used by the workflow:
+Nó được dùng để:
 
-- `VITE_GOOGLE_CLIENT_ID`
-- `VITE_ADMIN_EMAILS`
+- build project
+- deploy lên Azure Static Web Apps
 
-### Recommended GitHub Secrets
+### Secret nên có trong GitHub
 
 - `AZURE_STATIC_WEB_APPS_API_TOKEN_ORANGE_HILL_077720B00`
 - `VITE_GOOGLE_CLIENT_ID`
 - `VITE_ADMIN_EMAILS`
 
-Backend secrets such as:
+### Biến backend nên cấu hình ở Azure
+
+Nên đặt ở Azure thay vì đưa vào frontend build:
 
 - `GOOGLE_CLIENT_ID`
 - `AZURE_STORAGE_CONNECTION_STRING`
 - `ADMIN_EMAILS`
+- các table name
 
-should usually be configured directly inside Azure Static Web Apps rather than passed through the frontend build workflow.
+---
 
-## Important Files
+## 17. Hạn chế hiện tại
 
-### Frontend - Chat
+- chat đang dùng polling mỗi 5 giây, chưa realtime socket thật
+- chưa có upload ảnh trong chat
+- chưa có push notification
+- chưa có pagination cho inbox admin
+- chưa có read receipt chi tiết kiểu seen
+- app chưa dùng router URL đầy đủ
+- dữ liệu mẫu thiệp hiện vẫn là dữ liệu tĩnh ở frontend
 
-- [src/app/components/Contact.tsx](/abs/path/d:/Y3S2/Cloud/BTL/src/app/components/Contact.tsx:1)
-- [src/app/components/AdminChatPage.tsx](/abs/path/d:/Y3S2/Cloud/BTL/src/app/components/AdminChatPage.tsx:1)
-- [src/app/services/chatApi.ts](/abs/path/d:/Y3S2/Cloud/BTL/src/app/services/chatApi.ts:1)
-- [src/app/contexts/AuthContext.tsx](/abs/path/d:/Y3S2/Cloud/BTL/src/app/contexts/AuthContext.tsx:1)
+---
 
-### Frontend - Designer
+## 18. Hướng mở rộng tiếp theo
 
-- [src/app/components/WeddingCardDesigner.tsx](/abs/path/d:/Y3S2/Cloud/BTL/src/app/components/WeddingCardDesigner.tsx:1)
-- [src/app/types/weddingCard.ts](/abs/path/d:/Y3S2/Cloud/BTL/src/app/types/weddingCard.ts:1)
-- [src/app/App.tsx](/abs/path/d:/Y3S2/Cloud/BTL/src/app/App.tsx:1)
+- thay polling bằng `SignalR` hoặc `WebSocket`
+- thêm `React Router` để có URL riêng cho từng trang
+- cho phép gửi ảnh mẫu trong chat
+- thêm export thiết kế ra ảnh hoặc PDF
+- thêm mặt trước / mặt sau của thiệp
+- thêm bộ preset thiệp thực tế nhiều hơn
+- thêm tìm kiếm, lọc và phân loại hội thoại trong admin inbox
 
-### Backend
+---
 
-- [api/cards/index.js](/abs/path/d:/Y3S2/Cloud/BTL/api/cards/index.js:1)
-- [api/cards-item/index.js](/abs/path/d:/Y3S2/Cloud/BTL/api/cards-item/index.js:1)
-- [api/chat-conversations/index.js](/abs/path/d:/Y3S2/Cloud/BTL/api/chat-conversations/index.js:1)
-- [api/chat-conversation-item/index.js](/abs/path/d:/Y3S2/Cloud/BTL/api/chat-conversation-item/index.js:1)
-- [api/chat-messages/index.js](/abs/path/d:/Y3S2/Cloud/BTL/api/chat-messages/index.js:1)
-- [api/shared/cardsValidation.js](/abs/path/d:/Y3S2/Cloud/BTL/api/shared/cardsValidation.js:1)
-- [api/shared/chatRepository.js](/abs/path/d:/Y3S2/Cloud/BTL/api/shared/chatRepository.js:1)
-- [api/shared/googleAuth.js](/abs/path/d:/Y3S2/Cloud/BTL/api/shared/googleAuth.js:1)
+## 19. Checklist demo nhanh
 
-## Current Limitations
+Trước khi demo hoặc nộp bài, nên kiểm tra:
 
-- chat still uses polling every 5 seconds instead of realtime sockets
-- no image upload in chat
-- no push notifications
-- no conversation pagination
-- no detailed seen/read receipt
-- sample page and invitation designer are still single-view React state pages, not URL-based routes
+1. `.env` đã có `VITE_GOOGLE_CLIENT_ID`
+2. `VITE_ADMIN_EMAILS` chứa `kim1801x5@gmail.com`
+3. Azure đã có `GOOGLE_CLIENT_ID`
+4. Azure đã có `AZURE_STORAGE_CONNECTION_STRING`
+5. Azure đã có `ADMIN_EMAILS`
+6. app đã redeploy sau khi đổi config
+7. admin đăng nhập đúng Gmail
+8. user đăng nhập Google trước khi test lưu cloud hoặc chat cloud
 
-## Suggested Next Improvements
+---
 
-- replace polling with SignalR or WebSocket
-- add search for admin conversations
-- allow sending sample images in chat
-- add seen/read state
-- add dedicated frontend routing with React Router
-- add front/back invitation preview pages
-- add export to image or PDF for invitation drafts
+## 20. Kết luận
 
-## Quick Manual Checklist
+Dự án này là một ví dụ khá đầy đủ của mô hình:
 
-Before demo or deployment, verify:
+- `Frontend SPA bằng React`
+- `Xác thực bằng Google`
+- `Backend serverless bằng Azure Functions`
+- `Lưu dữ liệu cloud bằng Azure Table Storage`
+- `Triển khai tự động bằng Azure Static Web Apps + GitHub Actions`
 
-1. `.env` exists
-2. `VITE_GOOGLE_CLIENT_ID` is correct
-3. `VITE_ADMIN_EMAILS` contains `kim1801x5@gmail.com`
-4. Azure has `AZURE_STORAGE_CONNECTION_STRING`
-5. Azure has `GOOGLE_CLIENT_ID`
-6. Azure has `ADMIN_EMAILS`
-7. app has been redeployed after environment changes
-8. admin is signed in with the correct Gmail
+Điểm mạnh của project là không chỉ có giao diện, mà đã có:
 
-## Notes
+- luồng người dùng rõ ràng
+- xác thực
+- lưu dữ liệu cloud
+- phân quyền admin
+- chat user-admin
 
-- guest mode does not provide a cloud token, so full cloud chat and cloud save are not available there
-- if admin does not sign in with an allowed email, admin inbox will not be available
-- admin fallback is currently `kim1801x5@gmail.com`, but setting explicit environment variables is still recommended
+Nếu dùng cho báo cáo, bạn có thể mô tả ngắn gọn rằng:
+
+`Đây là một nền tảng thiết kế và tư vấn thiệp cưới trên cloud, trong đó React phụ trách trải nghiệm người dùng, Azure Functions phụ trách xử lý nghiệp vụ phía server, Google Identity Services phụ trách xác thực, và Azure Table Storage phụ trách lưu trữ dữ liệu thiết kế cũng như hội thoại tư vấn.`
