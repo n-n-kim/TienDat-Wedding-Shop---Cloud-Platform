@@ -16,7 +16,7 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
   const [googleError, setGoogleError] = useState<string | null>(null);
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
 
     if (!clientId) {
       setGoogleError(
@@ -216,7 +216,11 @@ function decodeJwtPayload(token: string): GoogleJwtPayload {
   }
 
   const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
-  const decoded = window.atob(normalized);
+  const padded = normalized.padEnd(
+    normalized.length + ((4 - (normalized.length % 4)) % 4),
+    '=',
+  );
+  const decoded = window.atob(padded);
   const bytes = Uint8Array.from(decoded, (char) => char.charCodeAt(0));
   const json = new TextDecoder().decode(bytes);
 

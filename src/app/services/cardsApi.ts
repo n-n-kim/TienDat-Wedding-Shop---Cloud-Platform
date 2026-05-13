@@ -70,22 +70,14 @@ export async function deleteWeddingCardDesign(id: string): Promise<void> {
 }
 
 async function buildApiError(response: Response, fallbackMessage: string): Promise<Error> {
+  const responseMessage = await readApiErrorMessage(response);
+
   if (response.status === 401) {
     clearStoredUser();
-    return new Error(getGoogleSessionErrorMessage());
+    return new Error(responseMessage ?? getGoogleSessionErrorMessage());
   }
 
-  try {
-    const data = (await response.json()) as { message?: string };
-
-    if (data.message) {
-      return new Error(data.message);
-    }
-  } catch {
-    // Ignore JSON parsing errors and fall back to the generic message.
-  }
-
-  return new Error(fallbackMessage);
+  return new Error(responseMessage ?? fallbackMessage);
 }
 
 function getAuthHeaders(): Record<string, string> {
@@ -98,4 +90,14 @@ function getAuthHeaders(): Record<string, string> {
   return {
     Authorization: `Bearer ${user.idToken}`,
   };
+}
+
+async function readApiErrorMessage(response: Response): Promise<string | null> {
+  try {
+    const data = (await response.json()) as { message?: string };
+
+    return data.message || null;
+  } catch {
+    return null;
+  }
 }

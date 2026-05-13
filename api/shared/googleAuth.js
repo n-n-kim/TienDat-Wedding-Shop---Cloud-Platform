@@ -1,18 +1,17 @@
 const { OAuth2Client } = require('google-auth-library');
 const { json } = require('./http');
 
-const GOOGLE_CLIENT_ID =
-  process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_IDS = getAllowedClientIds();
 
 let oauthClient;
 
 function getOAuthClient() {
-  if (!GOOGLE_CLIENT_ID) {
+  if (GOOGLE_CLIENT_IDS.length === 0) {
     throw new Error('GOOGLE_CLIENT_ID is not configured.');
   }
 
   if (!oauthClient) {
-    oauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+    oauthClient = new OAuth2Client();
   }
 
   return oauthClient;
@@ -30,7 +29,7 @@ async function requireAuthenticatedUser(context, req) {
     const client = getOAuthClient();
     const ticket = await client.verifyIdToken({
       idToken,
-      audience: GOOGLE_CLIENT_ID,
+      audience: GOOGLE_CLIENT_IDS,
     });
 
     const payload = ticket.getPayload();
@@ -51,7 +50,7 @@ async function requireAuthenticatedUser(context, req) {
 
     context.log.warn('Google ID token verification failed', {
       errorMessage: error?.message || 'Unknown Google token verification error.',
-      expectedAudience: GOOGLE_CLIENT_ID || null,
+      expectedAudience: GOOGLE_CLIENT_IDS,
       tokenAudience: debugPayload?.aud || null,
       tokenIssuer: debugPayload?.iss || null,
       tokenExpiry: debugPayload?.exp || null,
@@ -63,6 +62,15 @@ async function requireAuthenticatedUser(context, req) {
     });
     return null;
   }
+}
+
+function getAllowedClientIds() {
+  const rawValue = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || '';
+
+  return rawValue
+    .split(',')
+    .map((clientId) => clientId.trim())
+    .filter(Boolean);
 }
 
 function extractBearerToken(req) {
