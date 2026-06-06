@@ -10,6 +10,7 @@
 - lưu bản nháp thiết kế lên cloud
 - nhắn tin tư vấn giữa user và admin
 - để admin đăng nhập và trả lời hội thoại của khách hàng
+- xem ngay tại : https://orange-hill-077720b00.7.azurestaticapps.net/
 
 Dự án được xây dựng theo hướng `frontend tách khỏi backend`, trong đó:
 
